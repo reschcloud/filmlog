@@ -663,7 +663,29 @@ films:
     kapazitaet: 36
     status: offen
     angelegt_am: '2026-08-13T12:24:25'
-    aufnahmen: []
+    aufnahmen:
+    - datum: '2026-08-14'
+      uhrzeit: '15:22'
+      ort_text: Rasing
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/500
+      blende: f/11
+      motiv: Altes Haus (aus Telefonzelle)
+      aufgenommen_am: '2026-08-14T15:23:24'
+    - datum: '2026-08-14'
+      uhrzeit: '17:06'
+      ort_text: Mariazell
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/500
+      blende: f/11
+      motiv: Flieger und Vordach (Abstrakt)
+      aufgenommen_am: '2026-08-14T17:07:26'
   '11':
     name: Kodak Gold 200
     kamera: Voigtländer Bessa
@@ -726,6 +748,28 @@ films:
       blende: f/11
       motiv: Roter Baum
       aufgenommen_am: '2026-08-13T19:45:48'
+    - datum: '2026-08-14'
+      uhrzeit: '14:35'
+      ort_text: Fallenstein
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: 1/100
+      blende: f/16
+      motiv: Heugabel
+      aufgenommen_am: '2026-08-14T14:35:53'
+    - datum: '2026-08-14'
+      uhrzeit: '15:27'
+      ort_text: Rasing
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: 1/100
+      blende: f/22
+      motiv: Altes Haus
+      aufgenommen_am: '2026-08-14T15:27:53'
   '12':
     name: Testfilm
     kamera: Testkamera
@@ -764,3 +808,25 @@ films:
       blende: null
       motiv: Test
       aufgenommen_am: '2026-08-14T12:14:41'
+    - datum: '2026-08-14'
+      uhrzeit: '17:12'
+      ort_text: null
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: null
+      motiv: Test
+      aufgenommen_am: '2026-08-14T17:12:35'
+    - datum: '2026-08-14'
+      uhrzeit: '17:22'
+      ort_text: null
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: null
+      motiv: Test
+      aufgenommen_am: '2026-08-14T17:23:00'
