@@ -1,0 +1,725 @@
+next_film_number: 12
+films:
+  '1':
+    name: Kodak Ektar 100
+    kamera: Bronica ETRS
+    ablaufdatum: '2020'
+    status: abgeschlossen
+    angelegt_am: '2026-08-09T13:30:06'
+    aufnahmen:
+    - datum: '2026-07-30'
+      uhrzeit: '20:00'
+      ort_text: Liefering
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: 1/250
+      blende: f/16
+      motiv: '"Büro & Lager" unabsichtlich ausgelöst'
+      aufgenommen_am: '2026-08-09T13:33:26'
+    - datum: '2026-07-30'
+      uhrzeit: '20:00'
+      ort_text: Liefering
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: '4'
+      blende: f/16
+      motiv: '"Büro & Lager"'
+      aufgenommen_am: '2026-08-09T13:34:20'
+    - datum: '2026-07-30'
+      uhrzeit: '20:00'
+      ort_text: Liefering
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: '8'
+      blende: f/16
+      motiv: '"Büro & Lager"'
+      aufgenommen_am: '2026-08-09T13:34:48'
+    - datum: '2026-07-30'
+      uhrzeit: '20:00'
+      ort_text: Liefering
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: '8'
+      blende: f/8
+      motiv: '"Büro & Lager" von rechts'
+      aufgenommen_am: '2026-08-09T13:35:38'
+    - datum: '2026-07-30'
+      uhrzeit: '20:00'
+      ort_text: Liefering
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: '8'
+      blende: f/8
+      motiv: '"Büro & Lager" von rechts + Handytaschenlampe'
+      aufgenommen_am: '2026-08-09T13:36:05'
+    - datum: '2026-07-30'
+      uhrzeit: '20:00'
+      ort_text: Liefering
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: '8'
+      blende: f/5,6
+      motiv: '"Büro & Lager" von rechts + Handytaschenlampe'
+      aufgenommen_am: '2026-08-09T13:36:35'
+    - datum: '2026-08-07'
+      uhrzeit: '11:00'
+      ort_text: Liefering
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: 1/125
+      blende: f/11
+      motiv: '"Büro & Lager" von rechts mit Weg'
+      aufgenommen_am: '2026-08-09T13:37:11'
+    - datum: '2026-08-07'
+      uhrzeit: '11:00'
+      ort_text: Liefering
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: 1/125
+      blende: f/11
+      motiv: '"Büro & Lager" von rechts ohne Weg'
+      aufgenommen_am: '2026-08-09T13:37:36'
+    - datum: '2026-08-08'
+      uhrzeit: '16:00'
+      ort_text: Hundsfeldmoor
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 150mm
+      brennweite: 150mm
+      belichtungszeit: 1/125
+      blende: f/5,6
+      motiv: Kühe in der Wiese
+      aufgenommen_am: '2026-08-09T13:38:55'
+    - datum: '2026-08-08'
+      uhrzeit: '16:00'
+      ort_text: Hundsfeldmoor
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 150mm
+      brennweite: 150mm
+      belichtungszeit: 1/125
+      blende: f/5,6
+      motiv: Kühe in der Wiese
+      aufgenommen_am: '2026-08-09T13:39:22'
+    - datum: '2026-08-12'
+      uhrzeit: '19:48'
+      ort_text: Elsbethen
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: 1/125
+      blende: f/4
+      motiv: Bäume und Sonne im Hintergrund
+      aufgenommen_am: '2026-08-12T19:49:12'
+    abgeschlossen_am: '2026-08-12T21:38:07'
+  '2':
+    name: Kodak ColorPlus 200
+    kamera: Lomography Spinner
+    ablaufdatum: '2026'
+    status: abgeschlossen
+    angelegt_am: '2026-08-09T13:30:26'
+    aufnahmen:
+    - datum: '2026-08-08'
+      uhrzeit: '20:00'
+      ort_text: Elsbethen
+      ort_lat: null
+      ort_lon: null
+      objektiv: Lomography Spinner
+      brennweite: null
+      belichtungszeit: null
+      blende: Wolkig
+      motiv: Balkon mit Michi
+      aufgenommen_am: '2026-08-09T13:40:35'
+    - datum: '2026-08-09'
+      uhrzeit: '19:00'
+      ort_text: Kraftwerk
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: Sonnig
+      motiv: C&M mit Rädern am Kraftwerk
+      aufgenommen_am: '2026-08-09T20:09:49'
+    - datum: '2026-08-09'
+      uhrzeit: '19:09'
+      ort_text: Waldbad
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: null
+      motiv: Kamera fälschlicherweise auf R gestellt
+      aufgenommen_am: '2026-08-09T20:10:49'
+    - datum: '2026-08-09'
+      uhrzeit: '19:10'
+      ort_text: Waldbad
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: Sonnig
+      motiv: Waldbad (Aufnahme schräg)
+      aufgenommen_am: '2026-08-09T20:12:53'
+    - datum: '2026-08-09'
+      uhrzeit: '19:12'
+      ort_text: Waldbad
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: Sonnig
+      motiv: Waldbad (Aufnahme horizontal)
+      aufgenommen_am: '2026-08-09T20:13:33'
+    abgeschlossen_am: '2026-08-11T19:41:48'
+  '3':
+    name: Kodak Tri-X 400
+    kamera: Zenit TTL
+    ablaufdatum: '2020'
+    status: abgeschlossen
+    angelegt_am: '2026-08-09T13:43:39'
+    aufnahmen:
+    - datum: '2026-08-08'
+      uhrzeit: '17:00'
+      ort_text: Hundsfeldmoor
+      ort_lat: null
+      ort_lon: null
+      objektiv: Panagor 85-205mm
+      brennweite: null
+      belichtungszeit: null
+      blende: null
+      motiv: Dürre Bäume am Horizont
+      aufgenommen_am: '2026-08-09T13:46:36'
+    - datum: '2026-08-08'
+      uhrzeit: '17:00'
+      ort_text: Hundsfeldmoor
+      ort_lat: null
+      ort_lon: null
+      objektiv: Panagor 85-205mm
+      brennweite: null
+      belichtungszeit: 1/500
+      blende: null
+      motiv: Reflektorturm am Berg (von Wolke abgeschattet)
+      aufgenommen_am: '2026-08-09T13:47:38'
+    - datum: '2026-08-08'
+      uhrzeit: '17:00'
+      ort_text: Hundsfeldmoor
+      ort_lat: null
+      ort_lon: null
+      objektiv: Panagor 85-205mm
+      brennweite: null
+      belichtungszeit: 1/500
+      blende: null
+      motiv: Reflektorturm am Berg (Sonne am Turm)
+      aufgenommen_am: '2026-08-09T13:48:03'
+    - datum: '2026-08-08'
+      uhrzeit: '17:30'
+      ort_text: Hundsfeldmoor
+      ort_lat: null
+      ort_lon: null
+      objektiv: Panagor 85-205mm
+      brennweite: null
+      belichtungszeit: null
+      blende: null
+      motiv: Schafgarbe oder ähnlich
+      aufgenommen_am: '2026-08-09T13:50:08'
+    - datum: '2026-08-10'
+      uhrzeit: '10:00'
+      ort_text: Radweg
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: 35mm
+      belichtungszeit: 1/500
+      blende: f/11
+      motiv: Gebäude mit Balkone, Baum im Vordergrund
+      aufgenommen_am: '2026-08-10T10:19:33'
+    - datum: '2026-08-10'
+      uhrzeit: '10:00'
+      ort_text: Radweg
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: 35mm
+      belichtungszeit: 1/500
+      blende: f/11
+      motiv: Gebäude mit Balkonen
+      aufgenommen_am: '2026-08-10T10:19:59'
+    - datum: '2026-08-10'
+      uhrzeit: '10:15'
+      ort_text: Radweg Liefering
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: 35mm
+      belichtungszeit: 1/500
+      blende: f/11
+      motiv: Gebäude mit Wäscheleinen
+      aufgenommen_am: '2026-08-10T10:20:33'
+    - datum: '2026-08-10'
+      uhrzeit: '10:19'
+      ort_text: Commend
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: 35mm
+      belichtungszeit: 1/500
+      blende: f/11
+      motiv: Fahrrad und Fahrradständer
+      aufgenommen_am: '2026-08-10T10:24:42'
+    - datum: '2026-08-10'
+      uhrzeit: '15:33'
+      ort_text: Commend
+      ort_lat: null
+      ort_lon: null
+      objektiv: ALFO 28mm
+      brennweite: 28mm
+      belichtungszeit: 1/500
+      blende: f/11
+      motiv: Strommast mit Commente
+      aufgenommen_am: '2026-08-10T15:34:27'
+    - datum: '2026-08-10'
+      uhrzeit: '15:51'
+      ort_text: Graffiti-Haus
+      ort_lat: null
+      ort_lon: null
+      objektiv: ALFO 28mm
+      brennweite: 28mm
+      belichtungszeit: 1/500
+      blende: f/5,6
+      motiv: Graffiti-Haus
+      aufgenommen_am: '2026-08-10T15:52:13'
+    - datum: '2026-08-10'
+      uhrzeit: '17:16'
+      ort_text: Hubert-Sattler-Gasse 5, 5020 Salzburg
+      ort_lat: null
+      ort_lon: null
+      objektiv: ALFO 28mm
+      brennweite: 28mm
+      belichtungszeit: 1/125
+      blende: f/5,6
+      motiv: Garageneinfahrt
+      aufgenommen_am: '2026-08-10T17:17:00'
+    - datum: '2026-08-10'
+      uhrzeit: '17:35'
+      ort_text: Griesgasse 17
+      ort_lat: null
+      ort_lon: null
+      objektiv: ALFO 28mm
+      brennweite: 28mm
+      belichtungszeit: 1/500
+      blende: f/11
+      motiv: Fischmarkt
+      aufgenommen_am: '2026-08-10T17:36:30'
+    - datum: '2026-08-10'
+      uhrzeit: '17:36'
+      ort_text: Griesgasse 17
+      ort_lat: null
+      ort_lon: null
+      objektiv: ALFO 28mm
+      brennweite: 28mm
+      belichtungszeit: 1/500
+      blende: f/11
+      motiv: Fischmarkt mit Porsche 1
+      aufgenommen_am: '2026-08-10T17:36:50'
+    - datum: '2026-08-10'
+      uhrzeit: '17:36'
+      ort_text: Griesgasse 17
+      ort_lat: null
+      ort_lon: null
+      objektiv: ALFO 28mm
+      brennweite: 28mm
+      belichtungszeit: 1/500
+      blende: f/11
+      motiv: Fischmarkt mit Porsche 2
+      aufgenommen_am: '2026-08-10T17:37:07'
+    - datum: '2026-08-10'
+      uhrzeit: '17:49'
+      ort_text: Mirabellplatz
+      ort_lat: null
+      ort_lon: null
+      objektiv: ALFO 28mm
+      brennweite: 28mm
+      belichtungszeit: 1/250
+      blende: f/8
+      motiv: Durchgang zum Schloss, Gegenlicht
+      aufgenommen_am: '2026-08-10T17:50:25'
+    - datum: '2026-08-11'
+      uhrzeit: '10:20'
+      ort_text: Aigen
+      ort_lat: null
+      ort_lon: null
+      objektiv: ALFO 28mm
+      brennweite: 28mm
+      belichtungszeit: 1/500
+      blende: f/11
+      motiv: Verlassenes Bürogebäude
+      aufgenommen_am: '2026-08-11T10:20:33'
+    - datum: '2026-08-11'
+      uhrzeit: '10:26'
+      ort_text: Aigen
+      ort_lat: null
+      ort_lon: null
+      objektiv: ALFO 28mm
+      brennweite: 28mm
+      belichtungszeit: 1/250
+      blende: f/8
+      motiv: Kleines Gebäude mit Stahltreppe
+      aufgenommen_am: '2026-08-11T10:27:09'
+    - datum: '2026-08-12'
+      uhrzeit: '21:02'
+      ort_text: Elsbethen
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/30
+      blende: f/2
+      motiv: Bäume mit Statue im Vordergrund
+      aufgenommen_am: '2026-08-12T21:02:55'
+    - datum: '2026-08-12'
+      uhrzeit: '21:22'
+      ort_text: Unterführung Aigen
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/30
+      blende: f/2
+      motiv: Unterführung mit Heck von O-Bus
+      aufgenommen_am: '2026-08-12T21:23:12'
+    - datum: '2026-08-12'
+      uhrzeit: '21:37'
+      ort_text: Bei UKH
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/30
+      blende: f/2
+      motiv: Porsche
+      aufgenommen_am: '2026-08-12T21:37:48'
+    - datum: '2026-08-12'
+      uhrzeit: '22:03'
+      ort_text: Steingasse
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/30
+      blende: f/2
+      motiv: Fenster
+      aufgenommen_am: '2026-08-12T22:04:05'
+    - datum: '2026-08-12'
+      uhrzeit: '22:22'
+      ort_text: Linzer Gasse
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/30
+      blende: f/2
+      motiv: Bierdose mit Hand
+      aufgenommen_am: '2026-08-12T22:23:34'
+    - datum: '2026-08-12'
+      uhrzeit: '22:22'
+      ort_text: Linzer Gasse
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/30
+      blende: f/2
+      motiv: Bierdose mit Hand
+      aufgenommen_am: '2026-08-12T22:23:35'
+    - datum: '2026-08-12'
+      uhrzeit: '22:26'
+      ort_text: Linzer Gasse
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/60
+      blende: f/4
+      motiv: Frauen mit Schuhen
+      aufgenommen_am: '2026-08-12T22:26:40'
+    - datum: '2026-08-12'
+      uhrzeit: '22:28'
+      ort_text: Königsgässchen
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/30
+      blende: f/2
+      motiv: Menschen rauchen in Gasse
+      aufgenommen_am: '2026-08-12T22:28:43'
+    - datum: '2026-08-12'
+      uhrzeit: '22:32'
+      ort_text: Mirabellplatz
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/30
+      blende: f/2
+      motiv: Frau an Bushaltestelle
+      aufgenommen_am: '2026-08-12T22:33:06'
+    - datum: '2026-08-12'
+      uhrzeit: '23:08'
+      ort_text: Radweg entlang Salzach, nahe Rechenwirt
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/30
+      blende: f/2
+      motiv: Nächtliche Terrasse
+      aufgenommen_am: '2026-08-12T23:08:51'
+    abgeschlossen_am: '2026-08-13T12:22:21'
+  '8':
+    name: Kodak Gold 200
+    kamera: Lomography Spinner
+    ablaufdatum: '2028'
+    status: offen
+    angelegt_am: '2026-08-11T21:40:06'
+    aufnahmen:
+    - datum: '2026-08-11'
+      uhrzeit: '20:30'
+      ort_text: Boulderbar Salzburg
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: Wolkig
+      motiv: Bouldern in der Boulderbar
+      aufgenommen_am: '2026-08-11T21:41:05'
+    - datum: '2026-08-11'
+      uhrzeit: '20:30'
+      ort_text: Boulderbar Salzburg
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: Wolkig
+      motiv: Bouldern in der Boulderbar
+      aufgenommen_am: '2026-08-11T21:41:05'
+    - datum: '2026-08-11'
+      uhrzeit: '20:30'
+      ort_text: Boulderbar Salzburg
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: Wolkig
+      motiv: Bouldern in der Boulderbar
+      aufgenommen_am: '2026-08-11T21:41:05'
+    - datum: '2026-08-11'
+      uhrzeit: '20:30'
+      ort_text: Boulderbar Salzburg
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: Wolkig
+      motiv: Bouldern in der Boulderbar
+      aufgenommen_am: '2026-08-11T21:41:05'
+    - datum: '2026-08-11'
+      uhrzeit: '20:30'
+      ort_text: Boulderbar Salzburg
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: Wolkig
+      motiv: Bouldern in der Boulderbar
+      aufgenommen_am: '2026-08-11T21:41:05'
+    - datum: '2026-08-12'
+      uhrzeit: '20:00'
+      ort_text: Kapellenweg
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: Wolkig
+      motiv: C&M vor Sonnenfinsternis
+      aufgenommen_am: '2026-08-12T20:03:42'
+    - datum: '2026-08-12'
+      uhrzeit: '20:07'
+      ort_text: Kapellenweg
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: Wolkig
+      motiv: C&M vor Sonnenfinsternis
+      aufgenommen_am: '2026-08-12T20:07:47'
+  '9':
+    name: Kodak Tri-X 400
+    kamera: Bronica ETRS
+    ablaufdatum: '2020'
+    status: offen
+    angelegt_am: '2026-08-12T21:47:58'
+    aufnahmen:
+    - datum: '2026-08-12'
+      uhrzeit: '21:48'
+      ort_text: Vor UKH
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: '2'
+      blende: f/8
+      motiv: Porsche Frontal
+      aufgenommen_am: '2026-08-12T21:48:32'
+    - datum: '2026-08-12'
+      uhrzeit: '21:55'
+      ort_text: Vor UKH
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: '4'
+      blende: f/5,6
+      motiv: Porsche als Reflexion in Auslage
+      aufgenommen_am: '2026-08-12T21:55:35'
+    - datum: '2026-08-12'
+      uhrzeit: '22:15'
+      ort_text: Imbergstiege
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: '4'
+      blende: f/8
+      motiv: Stiege
+      aufgenommen_am: '2026-08-12T22:16:21'
+    - datum: '2026-08-12'
+      uhrzeit: '22:15'
+      ort_text: Imbergstiege
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: '4'
+      blende: f/8
+      motiv: Stiege
+      aufgenommen_am: '2026-08-12T22:16:21'
+    - datum: '2026-08-12'
+      uhrzeit: '22:16'
+      ort_text: Imbergstiege
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: '1'
+      blende: f/4
+      motiv: Imbergstiege mit Typen
+      aufgenommen_am: '2026-08-12T22:16:55'
+    - datum: '2026-08-12'
+      uhrzeit: '22:53'
+      ort_text: Radweg
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 40mm
+      belichtungszeit: '8'
+      blende: f/5,6
+      motiv: Ford Taunus
+      aufgenommen_am: '2026-08-12T22:55:03'
+  '10':
+    name: Rollei Retro 400S
+    kamera: Zenit TTL
+    ablaufdatum: '2023'
+    status: offen
+    angelegt_am: '2026-08-13T12:24:25'
+    aufnahmen: []
+  '11':
+    name: Kodak Gold 200
+    kamera: Voigtländer Bessa
+    ablaufdatum: '2028'
+    status: offen
+    angelegt_am: '2026-08-13T19:42:48'
+    aufnahmen:
+    - datum: '2026-08-13'
+      uhrzeit: '19:42'
+      ort_text: Purgstall
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: null
+      motiv: Fehlbedienung
+      aufgenommen_am: '2026-08-13T19:43:49'
+    - datum: '2026-08-13'
+      uhrzeit: '19:42'
+      ort_text: Purgstall
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: null
+      motiv: Fehlbedienung
+      aufgenommen_am: '2026-08-13T19:43:49'
+    - datum: '2026-08-13'
+      uhrzeit: '19:44'
+      ort_text: Purgstall
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: 1/50
+      blende: f/11
+      motiv: Friedhof
+      aufgenommen_am: '2026-08-13T19:45:10'
+    - datum: '2026-08-13'
+      uhrzeit: '19:45'
+      ort_text: Purgstall
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: 1/25
+      blende: f/11
+      motiv: Friedhof
+      aufgenommen_am: '2026-08-13T19:45:30'
+    - datum: '2026-08-13'
+      uhrzeit: '19:45'
+      ort_text: Purgstall
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: 1/50
+      blende: f/11
+      motiv: Roter Baum
+      aufgenommen_am: '2026-08-13T19:45:48'

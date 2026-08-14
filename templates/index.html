@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Filmlog</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="sprocket-strip" aria-hidden="true"></div>
+
+<header class="app-header">
+  <button class="brand" data-nav="start" type="button">
+    <span class="brand-mark">FILM<span class="brand-mark-accent">LOG</span></span>
+    <span class="brand-sub">Analoges Aufnahmeprotokoll</span>
+  </button>
+  <button class="back-btn" id="backBtn" type="button" hidden">Home</button>
+</header>
+
+<main id="app">
+
+  <!-- STARTSEITE -->
+  <section class="view" id="view-start" data-view="start">
+    <div id="startDashboard" class="dashboard"></div>
+    <div id="letzteAufnahme"></div>
+    <p class="dashboard-label">Funktionen</p>
+    <div class="tile-grid">
+      <!-- <button class="tile" data-nav="neue-aufnahme">
+        <span class="tile-glyph">📷</span>
+        <span class="tile-title" style="color: var(--red);">Aufnahme</span>
+        <span class="tile-desc">Neues Bild eintragen oder direkt eine aktive Kamera wählen.</span>
+      </button> -->
+      <button class="tile" data-nav="neuer-film">
+        <span class="tile-glyph">🎞️</span>
+        <span class="tile-title">Neuer Film</span>
+        <span class="tile-desc">Neue Film-Kamera-Kombination beginnen</span>
+      </button>
+      <button class="tile" data-nav="film-abschliessen">
+        <span class="tile-glyph">✅</span>
+        <span class="tile-title">Film abschließen</span>
+        <span class="tile-desc">Vollen Film beenden</span>
+      </button>
+      <!-- <button class="tile" data-nav="zuletzt">
+        <span class="tile-title">Zuletzt </span>
+        <span class="tile-desc">Die letzten protokollierten Bilder ansehen</span>
+      </button> -->
+      <button class="tile" data-nav="downloads">
+        <span class="tile-glyph">📝</span>
+        <span class="tile-title">Protokolle</span>
+        <span class="tile-desc">Protokolle abgeschlossener Filme herunterladen</span>
+      </button>
+      <button class="tile" data-nav="auswahllisten">
+        <span class="tile-glyph">⚙️</span>
+        <span class="tile-title">Optionen</span>
+        <span class="tile-desc">Filme, Kameras, Objektive &amp; Co. verwalten</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ZULETZT -->
+  <section class="view" id="view-zuletzt" data-view="zuletzt" hidden>
+    <h1 class="view-title">Zuletzt eingetragene Aufnahmen</h1>
+    <div id="zuletztListe" class="frame-list"></div>
+  </section>
+
+  <!-- NEUER FILM -->
+  <section class="view" id="view-neuer-film" data-view="neuer-film" hidden>
+    <h1 class="view-title">Neuer Film</h1>
+    <p class="view-hint">Jeder Film bekommt eine eindeutige Filmnummer (z.B. #42).</p>
+    <form id="formNeuerFilm" class="card">
+      <label>Filmname
+        <span class="select-with-add">
+          <select name="name" id="filmnameSelect" required></select>
+          <button type="button" class="add-btn" data-kategorie="filme" data-target="filmnameSelect" title="Neuen Filmnamen hinzufügen">+</button>
+        </span>
+      </label>
+      <label>Kamera
+        <span class="select-with-add">
+          <select name="kamera" id="kameraSelect" required></select>
+          <button type="button" class="add-btn" data-kategorie="kameras" data-target="kameraSelect" title="Neue Kamera hinzufügen">+</button>
+        </span>
+      </label>
+      <label>Ablaufjahr <span class="field-optional">(optional)</span>
+        <input type="number" name="ablaufdatum" id="ablaufjahrInput" min="1900" max="2900" step="1" placeholder="z. B. 2027">
+      </label>
+      <button type="submit" class="btn-primary">Film anlegen</button>
+    </form>
+    <div id="neuerFilmResult" class="result-card" hidden></div>
+  </section>
+
+  <!-- NEUE AUFNAHME -->
+  <section class="view" id="view-neue-aufnahme" data-view="neue-aufnahme" hidden>
+    <h1 class="view-title">Neue Aufnahme</h1>
+    <form id="formNeueAufnahme" class="card">
+      <label>Kamera / Film
+        <select name="film_nummer" id="filmSelect" required></select>
+      </label>
+
+      <div class="field-row">
+        <label>Datum
+          <input type="date" name="datum" required>
+        </label>
+        <label>Uhrzeit
+          <div class="uhrzeit-row">
+            <input type="time" name="uhrzeit" required>
+            <button type="button" class="now-btn" id="jetztBtn" title="Aktuelles Datum &amp; Uhrzeit setzen">Jetzt</button>
+          </div>
+        </label>
+      </div>
+
+      <label>Ort
+        <input type="text" name="ort_text" id="ortText" placeholder="wird per GPS ermittelt, bei Bedarf anpassen">
+        <span class="field-note" id="gpsStatus">GPS wird ermittelt …</span>
+      </label>
+
+      <div class="field-row">
+        <label>Objektiv
+          <span class="select-with-add">
+            <select name="objektiv" id="objektivSelect"></select>
+            <!-- <button type="button" class="add-btn" data-kategorie="objektive" data-target="objektivSelect" title="Neues Objektiv hinzufügen">+</button> -->
+          </span>
+        </label>
+        <label>Brennweite
+          <span class="select-with-add">
+            <select name="brennweite" id="brennweiteSelect"></select>
+            <!-- <button type="button" class="add-btn" data-kategorie="brennweiten" data-target="brennweiteSelect" title="Neue Brennweite hinzufügen">+</button> -->
+          </span>
+        </label>
+      </div>
+      <div class="field-row">
+        <label>Belichtungszeit
+          <span class="select-with-add">
+            <select name="belichtungszeit" id="belichtungszeitSelect"></select>
+            <!-- <button type="button" class="add-btn" data-kategorie="belichtungszeiten" data-target="belichtungszeitSelect" title="Neue Belichtungszeit hinzufügen">+</button> -->
+          </span>
+        </label>
+        <label>Blende
+          <span class="select-with-add">
+            <select name="blende" id="blendeSelect"></select>
+            <!-- <button type="button" class="add-btn" data-kategorie="blenden" data-target="blendeSelect" title="Neue Blende hinzufügen">+</button> -->
+          </span>
+        </label>
+      </div>
+
+      <label>Motivbeschreibung
+        <textarea name="motiv" rows="3" placeholder="Was ist auf dem Bild zu sehen?"></textarea>
+      </label>
+
+      <label>Anzahl <span class="field-optional">(mehrfach speichern)</span>
+        <input type="number" name="anzahl" id="anzahlInput" min="1" max="50" step="1" value="1">
+      </label>
+
+      <button type="submit" class="btn-primary">Aufnahme speichern</button>
+    </form>
+    <div id="neueAufnahmeResult" class="result-card" hidden></div>
+  </section>
+
+  <!-- FILM ABSCHLIESSEN -->
+  <section class="view" id="view-film-abschliessen" data-view="film-abschliessen" hidden>
+    <h1 class="view-title">Film abschließen</h1>
+    <form id="formFilmAbschliessen" class="card">
+      <label>Offener Film
+        <select name="film_nummer" id="filmAbschliessenSelect" required></select>
+      </label>
+      <button type="submit" class="btn-primary btn-danger">Film abschließen</button>
+    </form>
+    <div id="filmAbschliessenResult" hidden></div>
+  </section>
+
+  <!-- DOWNLOADS -->
+  <section class="view" id="view-downloads" data-view="downloads" hidden>
+    <h1 class="view-title">Protokolle</h1>
+    <p class="view-hint">Alle Daten liegen gesammelt in <code>data/db.yaml</code> auf dem Server. Für abgeschlossene Filme kann hier zusätzlich ein einzelnes Protokoll als Textdatei heruntergeladen werden.</p>
+    <div id="downloadsListe" class="download-list"></div>
+  </section>
+
+  <!-- AUSWAHLLISTEN -->
+  <section class="view" id="view-auswahllisten" data-view="auswahllisten" hidden>
+    <h1 class="view-title">Auswahllisten</h1>
+    <p class="view-hint">Die Reihenfolge der Einträge wird aus <code>optionen.yaml</code> übernommen.</p>
+    <div id="auswahllistenContainer" class="optionen-grid"></div>
+  </section>
+
+</main>
+
+<div class="sprocket-strip" aria-hidden="true"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

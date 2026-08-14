@@ -1,0 +1,61 @@
+filme:
+- Kodak Tri-X 400
+- Kodak Gold 200
+- Kodak ColorPlus 200
+- Kodak Ektar 100
+- Kodak Portra 160 VC
+- Kodak Portra 400 NC
+- Fomapan 100
+- Fomapan 200
+- Rollei Retro 400S
+- Testfilm
+kameras:
+- Zenit TTL
+- Bronica ETRS
+- Lomography Spinner
+- Testkamera
+- Voigtländer Bessa
+objektive:
+- Helios 44-2
+- ALFO 28mm
+- Pentacon 135mm
+- Zenzanon 40mm
+- Zenzanon 75mm
+- Zenzanon 150mm
+- Panagor 85-205mm
+brennweiten:
+- 28mm
+- 35mm
+- 40mm
+- 50mm
+- 58mm
+- 75mm
+- 85mm
+- 135mm
+- 150mm
+- 205mm
+belichtungszeiten:
+- 1/500
+- 1/250
+- 1/125
+- 1/60
+- 1/30
+- '1'
+- '2'
+- '4'
+- '6'
+- '8'
+- 1/50
+- 1/25
+blenden:
+- f/2
+- f/2,8
+- f/3,5
+- f/4
+- f/5,6
+- f/8
+- f/11
+- f/16
+- f/22
+- Wolkig
+- Sonnig

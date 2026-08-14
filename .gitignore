@@ -1,0 +1,5 @@
+filmlog-backup/
+filmlog-backup.sh
+filmlog/data/
+.DS_Store
+venv/
