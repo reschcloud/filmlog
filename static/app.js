@@ -188,15 +188,21 @@
     try {
       const filme = await api("/api/films?status=offen");
       container.innerHTML = filme.length
-        ? `<div class="dashboard-grid">${filme.map(f => `
+        ? `<div class="dashboard-grid">${filme.map(f => {
+            const balken = f.kapazitaet
+              ? `<div class="dashboard-fill-track"><div class="dashboard-fill-bar${f.anzahl_aufnahmen >= f.kapazitaet ? " dashboard-fill-voll" : ""}" style="width:${Math.min(100, Math.round(f.anzahl_aufnahmen / f.kapazitaet * 100))}%"></div></div>`
+              : "";
+            return `
             <div class="dashboard-card" data-film-nummer="${f.nummer}">
               <div class="dashboard-info">
                 <div class="dashboard-kamera">${escapeHtml(f.kamera)}</div>
                 <div class="dashboard-film">${escapeHtml(f.name)} · #${f.nummer}</div>
+                ${balken}
               </div>
-              <div class="dashboard-count">${f.anzahl_aufnahmen}</div>
+              <div class="dashboard-count">${f.anzahl_aufnahmen}${f.kapazitaet ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
             </div>
-          `).join("")}</div>`
+          `;
+          }).join("")}</div>`
         : `<p class="empty-state">Lege einen neuen Film an, um zu beginnen.</p>`;
 
       container.querySelectorAll(".dashboard-card").forEach(card => {

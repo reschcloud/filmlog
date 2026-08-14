@@ -1,4 +1,4 @@
-next_film_number: 12
+next_film_number: 14
 films:
   '1':
     name: Kodak Ektar 100
@@ -501,6 +501,7 @@ films:
     name: Kodak Gold 200
     kamera: Lomography Spinner
     ablaufdatum: '2028'
+    kapazitaet: 8
     status: offen
     angelegt_am: '2026-08-11T21:40:06'
     aufnahmen:
@@ -585,6 +586,7 @@ films:
     name: Kodak Tri-X 400
     kamera: Bronica ETRS
     ablaufdatum: '2020'
+    kapazitaet: 15
     status: offen
     angelegt_am: '2026-08-12T21:47:58'
     aufnahmen:
@@ -658,6 +660,7 @@ films:
     name: Rollei Retro 400S
     kamera: Zenit TTL
     ablaufdatum: '2023'
+    kapazitaet: 36
     status: offen
     angelegt_am: '2026-08-13T12:24:25'
     aufnahmen: []
@@ -723,3 +726,41 @@ films:
       blende: f/11
       motiv: Roter Baum
       aufgenommen_am: '2026-08-13T19:45:48'
+  '12':
+    name: Testfilm
+    kamera: Testkamera
+    ablaufdatum: '2027'
+    status: abgeschlossen
+    angelegt_am: '2026-08-14T12:01:46'
+    aufnahmen:
+    - datum: '2026-08-14'
+      uhrzeit: '12:01'
+      ort_text: Testort
+      ort_lat: null
+      ort_lon: null
+      objektiv: Zenzanon 40mm
+      brennweite: 205mm
+      belichtungszeit: 1/60
+      blende: f/4
+      motiv: Testbild
+      aufgenommen_am: '2026-08-14T12:02:12'
+    abgeschlossen_am: '2026-08-14T12:14:10'
+  '13':
+    name: Testfilm
+    kamera: Testkamera
+    ablaufdatum: '2027'
+    kapazitaet: 36
+    status: offen
+    angelegt_am: '2026-08-14T12:14:25'
+    aufnahmen:
+    - datum: '2026-08-14'
+      uhrzeit: '12:14'
+      ort_text: null
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: null
+      motiv: Test
+      aufgenommen_am: '2026-08-14T12:14:41'

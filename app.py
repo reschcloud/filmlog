@@ -94,6 +94,7 @@ def film_summary(nummer, film):
         "status": film["status"],
         "angelegt_am": film.get("angelegt_am"),
         "anzahl_aufnahmen": len(film.get("aufnahmen", [])),
+        "kapazitaet": film.get("kapazitaet"),
     }
 
 
@@ -123,11 +124,17 @@ def create_film():
     name = (payload.get("name") or "").strip()
     kamera = (payload.get("kamera") or "").strip()
     ablaufdatum = (payload.get("ablaufdatum") or "").strip()
+    kapazitaet_raw = (payload.get("kapazitaet") or "").strip()
 
     if not name or not kamera:
         return jsonify({"error": "Filmname und Kamera sind erforderlich."}), 400
     if ablaufdatum and not re.fullmatch(r"\d{4}", ablaufdatum):
         return jsonify({"error": "Ablaufjahr muss eine vierstellige Jahreszahl sein."}), 400
+    kapazitaet = None
+    if kapazitaet_raw:
+        if not kapazitaet_raw.isdigit() or int(kapazitaet_raw) <= 0:
+            return jsonify({"error": "Anzahl Aufnahmen muss eine positive Zahl sein."}), 400
+        kapazitaet = int(kapazitaet_raw)
 
     with _lock:
         db = load_db()
@@ -136,6 +143,7 @@ def create_film():
             "name": name,
             "kamera": kamera,
             "ablaufdatum": ablaufdatum or None,
+            "kapazitaet": kapazitaet,
             "status": "offen",
             "angelegt_am": datetime.now().isoformat(timespec="seconds"),
             "aufnahmen": [],

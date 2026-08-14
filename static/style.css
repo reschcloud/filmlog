@@ -617,3 +617,22 @@ body {
   background: var(--paper-dim);
   border-left-color: var(--red);
 }
+
+.dashboard-fill-track {
+  height: 4px;
+  background: rgba(242,234,217,0.12);
+  border-radius: 999px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.dashboard-fill-bar {
+  height: 100%;
+  background: var(--amber);
+  border-radius: 999px;
+}
+.dashboard-fill-bar.dashboard-fill-voll { background: var(--red); }
+
+.dashboard-max {
+  font-size: 0.6em;
+  color: var(--muted);
+}
