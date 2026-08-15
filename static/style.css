@@ -635,18 +635,22 @@ body {
   color: var(--muted);
 }
 
-.frame-frisch {
-  border: 2px solid #4caf50;
-  border-radius: 4px;
-  padding: 6px;
+.frisch-punkt {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4caf50;
+  margin-left: 6px;
+  vertical-align: middle;
   animation: frisch-pulse 2s ease-in-out infinite;
 }
 
 @keyframes frisch-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.45); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.55); }
   50% { box-shadow: 0 0 0 6px rgba(76, 175, 80, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .frame-frisch { animation: none; }
+  .frisch-punkt { animation: none; }
 }

@@ -686,10 +686,66 @@ films:
       blende: f/11
       motiv: Flieger und Vordach (Abstrakt)
       aufgenommen_am: '2026-08-14T17:07:26'
+    - datum: '2026-08-14'
+      uhrzeit: '18:24'
+      ort_text: Joseph Haydn Gasse Mariazell
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/500
+      blende: f/11
+      motiv: Wäscheleine
+      aufgenommen_am: '2026-08-14T18:25:10'
+    - datum: '2026-08-14'
+      uhrzeit: '19:40'
+      ort_text: Mitterbach
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/60
+      blende: f/2
+      motiv: Kerstin und Stefanie
+      aufgenommen_am: '2026-08-14T19:40:26'
+    - datum: '2026-08-14'
+      uhrzeit: '19:41'
+      ort_text: null
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/60
+      blende: f/2
+      motiv: Kerstin und Stefanie
+      aufgenommen_am: '2026-08-14T19:41:32'
+    - datum: '2026-08-14'
+      uhrzeit: '19:41'
+      ort_text: null
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/30
+      blende: f/2
+      motiv: Kerstin und Stefanie
+      aufgenommen_am: '2026-08-14T19:41:41'
+    - datum: '2026-08-15'
+      uhrzeit: 09:55
+      ort_text: Mariazell
+      ort_lat: null
+      ort_lon: null
+      objektiv: Helios 44-2
+      brennweite: 58mm
+      belichtungszeit: 1/500
+      blende: f/8
+      motiv: Haus und Garten durch Außenjalousie
+      aufgenommen_am: '2026-08-15T10:03:29'
   '11':
     name: Kodak Gold 200
     kamera: Voigtländer Bessa
     ablaufdatum: '2028'
+    kapazitaet: 8
     status: offen
     angelegt_am: '2026-08-13T19:42:48'
     aufnahmen:
@@ -830,3 +886,14 @@ films:
       blende: null
       motiv: Test
       aufgenommen_am: '2026-08-14T17:23:00'
+    - datum: '2026-08-15'
+      uhrzeit: '10:41'
+      ort_text: null
+      ort_lat: null
+      ort_lon: null
+      objektiv: null
+      brennweite: null
+      belichtungszeit: null
+      blende: null
+      motiv: Test
+      aufgenommen_am: '2026-08-15T10:41:38'

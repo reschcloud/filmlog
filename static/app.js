@@ -217,17 +217,14 @@
     const letzteContainer = document.getElementById("letzteAufnahme");
     try {
       const liste = await api("/api/aufnahmen/recent?limit=1");
-      letzteContainer.innerHTML = liste.length
-        ? `<p class="dashboard-label">Zuletzt</p>${renderFrames(liste, true)}<button type="button" class="mehr-btn" data-nav="zuletzt">Mehr</button>`
-        : "";
-      letzteContainer.querySelector(".mehr-btn")?.addEventListener("click", () => showView("zuletzt"));
-
       if (liste.length) {
         const alterMs = Date.now() - new Date(liste[0].aufgenommen_am).getTime();
-        if (alterMs <= 2 * 60 * 1000) {
-          letzteContainer.querySelector(".frame")?.classList.add("frame-frisch");
-        }
+        const frisch = alterMs <= 2 * 60 * 1000;
+        letzteContainer.innerHTML = `<p class="dashboard-label">Zuletzt${frisch ? ` <span class="frisch-punkt" title="Vor weniger als 2 Minuten aufgenommen"></span>` : ""}</p>${renderFrames(liste, true)}<button type="button" class="mehr-btn" data-nav="zuletzt">Mehr</button>`;
+      } else {
+        letzteContainer.innerHTML = "";
       }
+      letzteContainer.querySelector(".mehr-btn")?.addEventListener("click", () => showView("zuletzt"));
     } catch (err) {
       letzteContainer.innerHTML = "";
     }
