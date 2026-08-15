@@ -419,9 +419,18 @@
     container.innerHTML = `<p class="empty-state">Wird geladen …</p>`;
     try {
       const liste = await api("/api/aufnahmen/recent?limit=25");
-      container.innerHTML = liste.length
-        ? renderFrames(liste, true)
-        : `<p class="empty-state">Noch keine Aufnahmen protokolliert.</p>`;
+      if (!liste.length) {
+        container.innerHTML = `<p class="empty-state">Noch keine Aufnahmen protokolliert.</p>`;
+        return;
+      }
+      const heute = todayStr();
+      const heuteListe = liste.filter(a => a.datum === heute);
+      const aelterListe = liste.filter(a => a.datum !== heute);
+
+      container.innerHTML = `
+        ${heuteListe.length ? `<p class="dashboard-label">Heute</p>${renderFrames(heuteListe, true)}` : ""}
+        ${aelterListe.length ? `<p class="dashboard-label">Älter</p>${renderFrames(aelterListe, true)}` : ""}
+      `;
     } catch (err) {
       container.innerHTML = `<p class="error-msg">${escapeHtml(err.message)}</p>`;
     }
