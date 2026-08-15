@@ -561,6 +561,8 @@ body {
 .dashboard-info {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-width: 0;
 }
 .dashboard-kamera {
   font-family: var(--font-display);
@@ -595,8 +597,8 @@ body {
 }
 
 .dashboard-fill-track {
-  height: 4px;
-  background: rgba(242,234,217,0.12);
+  height: 6px;
+  background: var(--muted);
   border-radius: 999px;
   margin-top: 8px;
   overflow: hidden;
