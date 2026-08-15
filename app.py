@@ -232,6 +232,19 @@ def create_aufnahme():
     result["frame_nr"] = frame_nr
     return jsonify(result), 201
 
+@app.route("/api/films/<int:nummer>/aufnahmen/<int:index>", methods=["DELETE"])
+def delete_aufnahme(nummer, index):
+    with _lock:
+        db = load_db()
+        film = db["films"].get(str(nummer))
+        if not film:
+            return jsonify({"error": "Film nicht gefunden."}), 404
+        aufnahmen = film.get("aufnahmen", [])
+        if index < 1 or index > len(aufnahmen):
+            return jsonify({"error": "Aufnahme nicht gefunden."}), 404
+        del aufnahmen[index - 1]
+        save_db(db)
+    return jsonify({"geloescht": index})
 
 @app.route("/api/aufnahmen/recent", methods=["GET"])
 def recent_aufnahmen():

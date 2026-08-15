@@ -445,6 +445,22 @@ body {
 }
 .mehr-btn:hover { color: var(--paper-dim); }
 
+.frame-delete-btn {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--red);
+  color: var(--paper);
+  border: 1px solid var(--red-dim);
+  border-radius: 999px;
+  padding: 6px 12px 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+.frame-delete-btn:hover { background: var(--red-dim); color: var(--paper); }
+
 /* ---- Download-Liste ---- */
 .download-list {
   display: flex;
@@ -478,27 +494,33 @@ body {
 }
 .download-btn {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   text-decoration: none;
   color: var(--paper);
   background: var(--amber);
-  padding: 8px 16px;
+  padding: 8px 16px 2px;
   border-radius: 999px;
   white-space: nowrap;
   text-transform: uppercase;
 }
 .download-btn:hover { background: #aa7f2f; }
 
+.download-row-actions {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
 .delete-btn {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   background: var(--red);
   color: var(--paper);
   border: 1px solid var(--red-dim);
   border-radius: 999px;
-  padding: 8px 16px;
+  padding: 8px 16px 2px;
   cursor: pointer;
   white-space: nowrap;
   text-transform: uppercase;

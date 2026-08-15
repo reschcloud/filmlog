@@ -115,6 +115,22 @@
     if (btn) handleAddClick(btn);
   });
 
+  document.addEventListener("click", async (e) => {
+    const btn = e.target.closest(".frame-delete-btn");
+    if (!btn) return;
+    const filmNummer = btn.dataset.filmNummer;
+    const frameTitle = btn.dataset.frameTitle;
+    const frameNr = btn.dataset.frameNr;
+    if (!confirm(`"${frameTitle}" wirklich löschen?`)) return;
+    try {
+      await api(`/api/films/${filmNummer}/aufnahmen/${frameNr}`, { method: "DELETE" });
+      initZuletzt();
+      initStart();
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+
   async function initAuswahllisten() {
     const container = document.getElementById("auswahllistenContainer");
     container.innerHTML = `<p class="empty-state">Wird geladen …</p>`;
@@ -428,8 +444,8 @@
       const aelterListe = liste.filter(a => a.datum !== heute);
 
       container.innerHTML = `
-        ${heuteListe.length ? `<p class="dashboard-label">Heute</p>${renderFrames(heuteListe, true)}` : ""}
-        ${aelterListe.length ? `<p class="dashboard-label">Älter</p>${renderFrames(aelterListe, true)}` : ""}
+        ${heuteListe.length ? `<p class="dashboard-label">Heute</p>${renderFrames(heuteListe, true, true)}` : ""}
+        ${aelterListe.length ? `<p class="dashboard-label">Älter</p>${renderFrames(aelterListe, true, true)}` : ""}
       `;
     } catch (err) {
       container.innerHTML = `<p class="error-msg">${escapeHtml(err.message)}</p>`;
@@ -449,8 +465,10 @@
                 <div class="download-row-title">#${String(f.nummer)} — ${escapeHtml(f.name)}</div>
                 <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen</div>
               </div>
-              <a class="download-btn" href="/api/films/${f.nummer}/export" download>Download</a>
-              <button type="button" class="delete-btn" data-nummer="${f.nummer}" title="Film löschen">Löschen</button>
+              <div class="download-row-actions">
+                <a class="download-btn" href="/api/films/${f.nummer}/export" download>Download</a>
+                <button type="button" class="delete-btn" data-nummer="${f.nummer}" title="Film löschen">Löschen</button>
+              </div>
             </div>
           `).join("")
         : `<p class="empty-state">Noch kein Film abgeschlossen.</p>`;
@@ -481,7 +499,7 @@
     return (woerter[0] || "").slice(0, 3);
   }
 
-  function renderFrames(liste, mitFilmname) {
+  function renderFrames(liste, mitFilmname, mitAktionen = false) {
     return liste.map(a => `
       <div class="frame">
         <div class="frame-nr">${a.film_kamera ? escapeHtml(kameraKuerzel(a.film_kamera)) : String(a.frame_nr)}</div>
@@ -498,6 +516,7 @@
   ${a.belichtungszeit ? escapeHtml(a.belichtungszeit) + " " : ""}
   ${a.blende ? escapeHtml(a.blende) : ""}
           </div>
+  ${mitAktionen ? `<button type="button" class="frame-delete-btn" data-film-nummer="${a.film_nummer}" data-frame-nr="${a.frame_nr}" data-frame-title="${escapeHtml(a.motiv || `Aufnahme ${a.frame_nr}`)}">Löschen</button>` : ""}
         </div>
       </div>
     `).join("");
