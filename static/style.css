@@ -95,6 +95,7 @@ body {
 }
 
 .back-btn {
+  display: none;
   background: none;
   border: none;
   color: var(--paper-dim);
