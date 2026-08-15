@@ -406,6 +406,12 @@ def export_film(nummer):
     )
 
 
+CERT_FILE = os.environ.get("FILMLOG_CERT_FILE", os.path.join(BASE_DIR, "certs", "cert.pem"))
+KEY_FILE = os.environ.get("FILMLOG_KEY_FILE", os.path.join(BASE_DIR, "certs", "key.pem"))
+
 if __name__ == "__main__":
     load_db()
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    if os.path.exists(CERT_FILE) and os.path.exists(KEY_FILE):
+        app.run(host="0.0.0.0", port=5000, debug=False, ssl_context=(CERT_FILE, KEY_FILE))
+    else:
+        app.run(host="0.0.0.0", port=5000, debug=False)
