@@ -248,6 +248,7 @@ def delete_aufnahme(nummer, index):
 
 @app.route("/api/aufnahmen/recent", methods=["GET"])
 def recent_aufnahmen():
+    film_nummer = request.args.get("film_nummer")
     try:
         limit = int(request.args.get("limit", 20))
     except ValueError:
@@ -258,6 +259,8 @@ def recent_aufnahmen():
 
     alle = []
     for nummer, film in db["films"].items():
+        if film_nummer and str(nummer) != str(film_nummer):
+            continue
         for idx, eintrag in enumerate(film.get("aufnahmen", []), start=1):
             row = dict(eintrag)
             row["film_nummer"] = int(nummer)

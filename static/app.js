@@ -431,10 +431,33 @@
 
   // ---------- Zuletzt ----------
   async function initZuletzt() {
-    const container = document.getElementById("zuletztListe");
+  const container = document.getElementById("zuletztListe");
+  const filterSelect = document.getElementById("zuletztFilterSelect");
+
+  if (!filterSelect.dataset.geladen) {
+    filterSelect.innerHTML = `<option value="">Alle</option>`;
+    try {
+      const filme = await api("/api/films?status=offen");
+      filterSelect.innerHTML += filme
+        .map(f => `<option value="${f.nummer}">${escapeHtml(f.kamera)} (${escapeHtml(f.name)} #${f.nummer})</option>`)
+        .join("");
+    } catch (err) {
+      // Filter-Liste ist ein Komfort-Feature, kein Grund die Ansicht zu blockieren.
+    }
+    filterSelect.dataset.geladen = "true";
+    filterSelect.onchange = () => ladeZuletztListe();
+  }
+
+  await ladeZuletztListe();
+
+  async function ladeZuletztListe() {
+    const filmNummer = filterSelect.value;
     container.innerHTML = `<p class="empty-state">Wird geladen …</p>`;
     try {
-      const liste = await api("/api/aufnahmen/recent?limit=25");
+      const url = filmNummer
+        ? `/api/aufnahmen/recent?limit=36&film_nummer=${filmNummer}`
+        : `/api/aufnahmen/recent?limit=25`;
+      const liste = await api(url);
       if (!liste.length) {
         container.innerHTML = `<p class="empty-state">Noch keine Aufnahmen protokolliert.</p>`;
         return;
@@ -442,7 +465,6 @@
       const heute = todayStr();
       const heuteListe = liste.filter(a => a.datum === heute);
       const aelterListe = liste.filter(a => a.datum !== heute);
-
       container.innerHTML = `
         ${heuteListe.length ? `<p class="dashboard-label">Heute</p>${renderFrames(heuteListe, true, true)}` : ""}
         ${aelterListe.length ? `<p class="dashboard-label">Älter</p>${renderFrames(aelterListe, true, true)}` : ""}
@@ -451,6 +473,7 @@
       container.innerHTML = `<p class="error-msg">${escapeHtml(err.message)}</p>`;
     }
   }
+}
 
   // ---------- Downloads ----------
   async function initDownloads() {
