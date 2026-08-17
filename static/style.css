@@ -147,7 +147,7 @@ body {
 /* ---- Startseite: Kontaktabzug-Kacheln ---- */
 .tile-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
 }
 
@@ -156,7 +156,7 @@ body {
   border: 1px solid rgba(242,234,217,0.1);
   border-radius: 4px;
   padding: 24px 20px;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
   color: var(--ink);
   display: flex;
