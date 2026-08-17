@@ -205,11 +205,13 @@
       const filme = await api("/api/films?status=offen");
       container.innerHTML = filme.length
         ? `<div class="dashboard-grid">${filme.map(f => {
-            const balken = f.kapazitaet
-              ? `<div class="dashboard-fill-track"><div class="dashboard-fill-bar${f.anzahl_aufnahmen >= f.kapazitaet ? " dashboard-fill-voll" : ""}" style="width:${Math.min(100, Math.round(f.anzahl_aufnahmen / f.kapazitaet * 100))}%"></div></div>`
-              : "";
-            return `
+          const voll = f.kapazitaet && f.anzahl_aufnahmen >= f.kapazitaet;
+          const balken = f.kapazitaet
+            ? `<div class="dashboard-fill-track"><div class="dashboard-fill-bar${voll ? " dashboard-fill-voll" : ""}" style="width:${Math.min(100, Math.round(f.anzahl_aufnahmen / f.kapazitaet * 100))}%"></div></div>`
+            : "";
+          return `
             <div class="dashboard-card" data-film-nummer="${f.nummer}">
+              ${voll ? `<button type="button" class="dashboard-done-btn" data-nummer="${f.nummer}" data-kamera="${escapeHtml(f.kamera)}" title="Film abschließen">✓</button>` : ""}
               <div class="dashboard-info">
                 <div class="dashboard-kamera">${escapeHtml(f.kamera)}</div>
                 <div class="dashboard-film">${escapeHtml(f.name)} · #${f.nummer}</div>
@@ -218,13 +220,27 @@
               <div class="dashboard-count">${f.anzahl_aufnahmen}${f.kapazitaet ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
             </div>
           `;
-          }).join("")}</div>`
+        }).join("")}</div>`
         : `<p class="empty-state">Lege einen neuen Film an, um zu beginnen.</p>`;
 
       container.querySelectorAll(".dashboard-card").forEach(card => {
         card.onclick = () => {
           vorausgewaehlterFilm = Number(card.dataset.filmNummer);
-          showView("neue-aufnahme");
+          navigate("neue-aufnahme");
+        };
+      });
+      container.querySelectorAll(".dashboard-done-btn").forEach(btn => {
+        btn.onclick = async (e) => {
+          e.stopPropagation();
+          const nummer = btn.dataset.nummer;
+          const kamera = btn.dataset.kamera;
+          if (!confirm(`Film #${nummer} (${kamera}) wirklich abschließen?`)) return;
+          try {
+            await api(`/api/films/${nummer}/complete`, { method: "POST" });
+            initStart();
+          } catch (err) {
+            alert(err.message);
+          }
         };
       });
     } catch (err) {
