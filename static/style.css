@@ -23,7 +23,18 @@ src: url('/static/fonts/LeagueGothic-Regular.otf');
 }
 @font-face {
 font-family: LeagueGothic-CondensedRegular;
-src: url('/static/fonts/LeagueGothic-CondensedRegular.otf');
+src: url('/static/fonts/LeagueGothic-CondensedRegular.otf');.reopen-btn {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: none;
+  color: var(--amber);
+  border: 1px solid var(--amber);
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.reopen-btn:hover { background: var(--amber); color: var(--bg); }
 }
 
 @font-face {
@@ -519,6 +530,20 @@ body {
   text-transform: uppercase;
 }
 .download-btn:hover { background: #aa7f2f; }
+
+.reopen-btn {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--paper);
+  background: var(--amber);
+  padding: 8px 16px 2px;
+  border-radius: 999px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.reopen-btn:hover { background: #aa7f2f; }
 
 .download-row-actions {
   display: flex;

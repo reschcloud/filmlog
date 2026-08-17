@@ -490,7 +490,8 @@
               </div>
               <div class="download-row-actions">
                 <a class="download-btn" href="/api/films/${f.nummer}/export" download>Download</a>
-                <button type="button" class="delete-btn" data-nummer="${f.nummer}" title="Film löschen">Löschen</button>
+                <button type="button" class="reopen-btn" data-nummer="${f.nummer}" title="Wieder öffnen">Öffnen</button>
+                <button type="button" class="delete-btn" data-nummer="${f.nummer}" title="Löschen">Löschen</button>
               </div>
             </div>
           `).join("")
@@ -502,6 +503,19 @@
           if (!confirm(`Film #${nummer} wirklich unwiderruflich löschen? Vorher solltest du das Protokoll heruntergeladen haben.`)) return;
           try {
             await api(`/api/films/${nummer}`, { method: "DELETE" });
+            initDownloads();
+          } catch (err) {
+            alert(err.message);
+          }
+        };
+      });
+
+      container.querySelectorAll(".reopen-btn").forEach(btn => {
+        btn.onclick = async () => {
+          const nummer = btn.dataset.nummer;
+          if (!confirm(`Film #${nummer} wieder öffnen? Danach können erneut Aufnahmen hinzugefügt werden.`)) return;
+          try {
+            await api(`/api/films/${nummer}/reopen`, { method: "POST" });
             initDownloads();
           } catch (err) {
             alert(err.message);

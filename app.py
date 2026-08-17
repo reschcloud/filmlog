@@ -180,6 +180,21 @@ def complete_film(nummer):
         data["aufnahmen"] = film.get("aufnahmen", [])
     return jsonify(data)
 
+@app.route("/api/films/<int:nummer>/reopen", methods=["POST"])
+def reopen_film(nummer):
+    with _lock:
+        db = load_db()
+        film = db["films"].get(str(nummer))
+        if not film:
+            return jsonify({"error": "Film nicht gefunden."}), 404
+        if film["status"] != "abgeschlossen":
+            return jsonify({"error": "Nur abgeschlossene Filme können wieder geöffnet werden."}), 400
+        film["status"] = "offen"
+        film.pop("abgeschlossen_am", None)
+        save_db(db)
+        data = film_summary(str(nummer), film)
+    return jsonify(data)
+
 @app.route("/api/films/<int:nummer>", methods=["DELETE"])
 def delete_film(nummer):
     with _lock:
