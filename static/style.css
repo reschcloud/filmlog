@@ -9,10 +9,15 @@
   --red: #b23c2a;
   --red-dim: #7c2a1e;
   --amber: #c68a2e;
+  --amber-dim: #835b1e;
   --muted: #dfd3c5;
   --font-display: "TMT-LimkinVF", sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-serif: ui-serif, Georgia, "Liberation Serif", "Times New Roman", serif;
+  --small: 12px;
+  --medium: 15px;
+  --large: 19px
+
 }
 
 /*  FONTS ---------------------------------------------------------------------------------------------------------------------------------*/
@@ -25,7 +30,7 @@ src: url('/static/fonts/LeagueGothic-Regular.otf');
 font-family: LeagueGothic-CondensedRegular;
 src: url('/static/fonts/LeagueGothic-CondensedRegular.otf');.reopen-btn {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--medium);
   background: none;
   color: var(--amber);
   border: 1px solid var(--amber);
@@ -113,7 +118,7 @@ body {
 .brand-mark-accent { color: var(--red); }
 .brand-sub {
   display: none;
-  font-size: 12px;
+  font-size: var(--small);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
@@ -126,7 +131,7 @@ body {
   border: none;
   color: var(--paper-dim);
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: var(--medium);
   font-weight: 700;
   padding: 8px 14px;
   cursor: pointer;
@@ -180,12 +185,12 @@ body {
 .tile-title {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 20px;
+  font-size: var(--large);
   text-transform: uppercase;
 }
 .tile-desc {
   font-family: var(--font-serif);
-  font-size: 16px;
+  font-size: var(--medium);
   color: var(--ink-soft);
   line-height: 1.4;
 }
@@ -194,7 +199,7 @@ body {
 .view-title {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 28px;
+  font-size: var(--large);
   letter-spacing: 0.04em;
   margin: 18px 0 4px;
   color: var(--paper);
@@ -202,7 +207,7 @@ body {
 .view-hint {
   font-family: var(--font-serif);
   color: var(--muted);
-  font-size: 16px;
+  font-size: var(--medium);
   max-width: 60ch;
   margin: 0 0 20px;
 }
@@ -227,7 +232,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 16px;
+  font-size: var(--medium);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--ink-soft);
@@ -237,7 +242,7 @@ body {
 
 .card input, .card select, .card textarea {
   /* font-family: var(--font-mono); */
-  font-size: 18px;
+  font-size: var(--medium);
   color: var(--ink);
   background: #fffdf8;
   border: 1px solid var(--paper-dim);
@@ -272,7 +277,7 @@ body {
   width: 40px;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 20px;
+  font-size: var(--large);
   background: var(--paper-dim);
   color: var(--ink);
   border: 1px solid var(--paper-dim);
@@ -298,7 +303,7 @@ body {
 .optionen-card h2 {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 20px;
+  font-size: var(--large);
   letter-spacing: 0.04em;
   margin: 0 0 12px;
   color: var(--amber);
@@ -318,7 +323,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  font-size: 14px;
+  font-size: var(--medium);
   padding: 6px 10px;
   background: var(--bg);
   border-radius: 2px;
@@ -328,7 +333,7 @@ body {
   border: none;
   color: var(--muted);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--medium);
   line-height: 1;
   padding: 0 4px;
 }
@@ -342,7 +347,7 @@ body {
   flex: 1;
   min-width: 0;
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: var(--medium);
   color: var(--paper);
   background: var(--bg);
   border: 1px solid rgba(242,234,217,0.15);
@@ -351,7 +356,7 @@ body {
 }
 .optionen-add-row button {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: var(--medium);
   background: var(--red);
   color: var(--paper);
   border: none;
@@ -359,13 +364,13 @@ body {
   padding: 0 14px;
   cursor: pointer;
 }
-.optionen-add-row button:hover { background: #8f2e20; }
+.optionen-add-row button:hover { background: var(--red-dim); }
 
 .field-note {
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: 12px;
-  color: var(--muted);
+  font-size: var(--small);
+  color: var(--ink-soft);
   text-transform: none;
   letter-spacing: normal;
 }
@@ -374,20 +379,20 @@ body {
   align-self: flex-start;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 18px;
+  font-size: var(--large);
   letter-spacing: 0.05em;
   background: var(--red);
   color: var(--paper);
   border: none;
-  border-radius: 2px;
-  padding: 12px 28px;
+  border-radius: 999px;
+  padding: 8px 20px;
   cursor: pointer;
   transition: background .15s ease, transform .1s ease;
 }
-.btn-primary:hover { background: #8f2e20; }
+.btn-primary:hover { background: var(--red-dim); }
 .btn-primary:active { transform: translateY(1px); }
-.btn-danger { background: var(--red-dim); }
-.btn-danger:hover { background: var(--red); }
+.btn-danger { background: var(--red); }
+.btn-danger:hover { background: var(--red-dim); }
 
 /* ---- Ergebnis-Karten ---- */
 .result-card {
@@ -397,7 +402,7 @@ body {
   border-radius: 3px;
   padding: 18px 22px;
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: var(--medium);
 }
 .result-card .stamp {
   font-family: var(--font-display);
@@ -433,12 +438,12 @@ body {
   text-align: center;
 }
 .frame-meta {
-  font-size: 14px;
+  font-size: var(--medium);
   color: var(--paper-dim);
   letter-spacing: 0.03em;
 }
 .frame-film {
-  font-size: 14px;
+  font-size: var(--medium);
   color: var(--paper);
   margin-top: 6px;
   font-weight: 700;
@@ -448,7 +453,7 @@ body {
   font-style: italic;
   color: var(--paper);
   margin-top: 6px;
-  font-size: 16px;
+  font-size: var(--large);
 }
 .empty-state {
   font-family: var(--font-serif);
@@ -461,7 +466,7 @@ body {
   margin: 8px 0 0 auto;
   font-family: var(--font-display);
   text-transform: uppercase;
-  font-size: 16px;
+  font-size: var(--large);
   font-weight: 700;
   background: none;
   color: var(--paper);
@@ -473,7 +478,7 @@ body {
 
 .frame-delete-btn {
   font-family: var(--font-display);
-  font-size: 10px;
+  font-size: var(--small);
   font-weight: 700;
   background: var(--red);
   color: var(--paper);
@@ -523,22 +528,23 @@ body {
   padding: 14px 18px;
   flex-wrap: wrap;
 }
-.download-row-info { font-size: 14px; }
+.download-row-info { font-size: var(--medium); }
 .download-row-title {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 18px;
+  font-size: var(--large);
   color: var(--ink);
   letter-spacing: 0.03em;
 }
 .download-row-meta {
-  font-size: 14px;
+  font-family: var(--font-serif);
+  font-size: var(--medium);
   color: var(--ink-soft);
   margin-top: 2px;
 }
 .download-btn {
   font-family: var(--font-display);
-  font-size: 12px;
+  font-size: var(--small);
   font-weight: 700;
   text-decoration: none;
   color: var(--paper);
@@ -548,11 +554,11 @@ body {
   white-space: nowrap;
   text-transform: uppercase;
 }
-.download-btn:hover { background: #aa7f2f; }
+.download-btn:hover { background: var(--amber-dim); }
 
 .reopen-btn {
   font-family: var(--font-display);
-  font-size: 12px;
+  font-size: var(--small);
   font-weight: 700;
   text-decoration: none;
   color: var(--paper);
@@ -562,7 +568,7 @@ body {
   white-space: nowrap;
   text-transform: uppercase;
 }
-.reopen-btn:hover { background: #aa7f2f; }
+.reopen-btn:hover { background: var(--amber-dim); }
 
 .download-row-actions {
   display: flex;
@@ -572,7 +578,7 @@ body {
 
 .delete-btn {
   font-family: var(--font-display);
-  font-size: 12px;
+  font-size: var(--small);
   font-weight: 700;
   background: var(--red);
   color: var(--paper);
@@ -585,10 +591,22 @@ body {
 }
 .delete-btn:hover { background: var(--red-dim); color: var(--paper); }
 
+.entwickelt-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-family: var(--font-serif);
+  font-size: var(--medium);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.entwickelt-toggle input { accent-color: var(--amber); cursor: pointer; }
+
 .error-msg {
   color: var(--red);
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: var(--medium);
   margin: 0;
 }
 
@@ -601,7 +619,7 @@ body {
 .now-btn {
   flex-shrink: 0;
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: var(--medium);
   background: var(--paper-dim);
   color: var(--ink);
   border: 1px solid var(--paper-dim);
@@ -616,7 +634,7 @@ body {
 
 .dashboard-label {
   font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: var(--medium);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--muted);
@@ -645,7 +663,7 @@ body {
   border: none;
   background: var(--amber);
   color: var(--bg);
-  font-size: 16px;
+  font-size: var(--large);
   font-weight: 700;
   cursor: pointer;
   display: flex;
@@ -663,14 +681,14 @@ body {
 .dashboard-kamera {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 18px;
+  font-size: var(--large);
   letter-spacing: 0.02em;
   color: var(--ink);
   text-transform: uppercase;
 }
 .dashboard-film {
   font-family: var(--font-serif);
-  font-size: 16px;
+  font-size: var(--medium);
   color: var(--ink-soft);
   margin-top: 2px;
 }

@@ -95,6 +95,7 @@ def film_summary(nummer, film):
         "angelegt_am": film.get("angelegt_am"),
         "anzahl_aufnahmen": len(film.get("aufnahmen", [])),
         "kapazitaet": film.get("kapazitaet"),
+        "entwickelt": film.get("entwickelt", False),
     }
 
 
@@ -191,6 +192,31 @@ def reopen_film(nummer):
             return jsonify({"error": "Nur abgeschlossene Filme können wieder geöffnet werden."}), 400
         film["status"] = "offen"
         film.pop("abgeschlossen_am", None)
+        save_db(db)
+        data = film_summary(str(nummer), film)
+    return jsonify(data)
+
+@app.route("/api/films/<int:nummer>/entwickelt", methods=["POST"])
+def markiere_entwickelt(nummer):
+    with _lock:
+        db = load_db()
+        film = db["films"].get(str(nummer))
+        if not film:
+            return jsonify({"error": "Film nicht gefunden."}), 404
+        film["entwickelt"] = True
+        save_db(db)
+        data = film_summary(str(nummer), film)
+    return jsonify(data)
+
+
+@app.route("/api/films/<int:nummer>/entwickelt", methods=["DELETE"])
+def entferne_entwickelt_markierung(nummer):
+    with _lock:
+        db = load_db()
+        film = db["films"].get(str(nummer))
+        if not film:
+            return jsonify({"error": "Film nicht gefunden."}), 404
+        film["entwickelt"] = False
         save_db(db)
         data = film_summary(str(nummer), film)
     return jsonify(data)

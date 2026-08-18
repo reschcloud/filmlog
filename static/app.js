@@ -501,6 +501,10 @@
               <div class="download-row-info">
                 <div class="download-row-title">#${String(f.nummer)} — ${escapeHtml(f.name)}</div>
                 <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen</div>
+                <label class="entwickelt-toggle">
+                  <input type="checkbox" class="entwickelt-checkbox" data-nummer="${f.nummer}" ${f.entwickelt ? "checked" : ""}>
+                  Entwickelt
+                </label>
               </div>
               <div class="download-row-actions">
                 <a class="download-btn" href="/api/films/${f.nummer}/export" download>Download</a>
@@ -536,6 +540,19 @@
           }
         };
       });
+
+      container.querySelectorAll(".entwickelt-checkbox").forEach(cb => {
+        cb.onchange = async () => {
+          const nummer = cb.dataset.nummer;
+          try {
+            await api(`/api/films/${nummer}/entwickelt`, { method: cb.checked ? "POST" : "DELETE" });
+          } catch (err) {
+            alert(err.message);
+            cb.checked = !cb.checked;
+          }
+        };
+      });
+
     } catch (err) {
       container.innerHTML = `<p class="error-msg">${escapeHtml(err.message)}</p>`;
     }
