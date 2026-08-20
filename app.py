@@ -108,6 +108,7 @@ def index():
 @app.route("/api/films", methods=["GET"])
 def get_films():
     status = request.args.get("status")
+    sortierung = request.args.get("sortierung")
     with _lock:
         db = load_db()
     films = db["films"]
@@ -115,8 +116,20 @@ def get_films():
     for nummer, film in films.items():
         if status and film["status"] != status:
             continue
-        result.append(film_summary(nummer, film))
-    result.sort(key=lambda f: f["nummer"], reverse=True)
+        eintrag = film_summary(nummer, film)
+        if sortierung == "zuletzt_genutzt":
+            aufnahmen = film.get("aufnahmen", [])
+            zeiten = [a.get("aufgenommen_am") for a in aufnahmen if a.get("aufgenommen_am")]
+            eintrag["_sortier_zeit"] = max(zeiten) if zeiten else (film.get("angelegt_am") or "")
+        result.append(eintrag)
+
+    if sortierung == "zuletzt_genutzt":
+        result.sort(key=lambda f: f["_sortier_zeit"], reverse=True)
+        for f in result:
+            del f["_sortier_zeit"]
+    else:
+        result.sort(key=lambda f: f["nummer"], reverse=True)
+
     return jsonify(result)
 
 FILMTYPEN = {"sw", "farbe", "anderes"}

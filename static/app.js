@@ -202,7 +202,7 @@
     const container = document.getElementById("startDashboard");
     container.innerHTML = `<p class="empty-state">Wird geladen …</p>`;
     try {
-      const filme = await api("/api/films?status=offen");
+      const filme = await api("/api/films?status=offen&sortierung=zuletzt_genutzt");
       container.innerHTML = filme.length
         ? `<div class="dashboard-grid">${filme.map(f => {
           const voll = f.kapazitaet && f.anzahl_aufnahmen >= f.kapazitaet;
@@ -501,38 +501,35 @@
     container.innerHTML = `<p class="empty-state">Wird geladen …</p>`;
     try {
       const filme = await api("/api/films?status=abgeschlossen");
-      container.innerHTML = filme.length
-        ? filme.map(f => `
-            <div class="download-row">
-              <div class="download-row-info">
-                <div class="download-row-title">#${String(f.nummer)} — ${escapeHtml(f.name)} ${filmtypEmoji(f.filmtyp)}</div>
-                <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen</div>
-                <label class="entwickelt-toggle">
-                  <input type="checkbox" class="entwickelt-checkbox" data-nummer="${f.nummer}" ${f.entwickelt ? "checked" : ""}>
-                  Entwickelt
-                </label>
-              </div>
-              <div class="download-row-actions">
-                <a class="download-btn" href="/api/films/${f.nummer}/export" download>Download</a>
-                <button type="button" class="reopen-btn" data-nummer="${f.nummer}" title="Wieder öffnen">Öffnen</button>
-                <button type="button" class="delete-btn" data-nummer="${f.nummer}" title="Löschen">Löschen</button>
-              </div>
-            </div>
-          `).join("")
-        : `<p class="empty-state">Noch kein Film abgeschlossen.</p>`;
+      if (!filme.length) {
+        container.innerHTML = `<p class="empty-state">Noch kein Film abgeschlossen.</p>`;
+        return;
+      }
+      const nichtEntwickelt = filme.filter(f => !f.entwickelt);
+      const entwickelt = filme.filter(f => f.entwickelt);
 
-      container.querySelectorAll(".delete-btn").forEach(btn => {
-        btn.onclick = async () => {
-          const nummer = btn.dataset.nummer;
-          if (!confirm(`Film #${nummer} wirklich unwiderruflich löschen? Vorher solltest du das Protokoll heruntergeladen haben.`)) return;
-          try {
-            await api(`/api/films/${nummer}`, { method: "DELETE" });
-            initDownloads();
-          } catch (err) {
-            alert(err.message);
-          }
-        };
-      });
+      const zeile = f => `
+        <div class="download-row">
+          <div class="download-row-info">
+            <div class="download-row-title">${filmtypEmoji(f.filmtyp)} Nr. ${String(f.nummer)} — ${escapeHtml(f.name)}</div>
+            <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen</div>
+            <label class="entwickelt-toggle">
+              <input type="checkbox" class="entwickelt-checkbox" data-nummer="${f.nummer}" ${f.entwickelt ? "checked" : ""}>
+              Entwickelt
+            </label>
+          </div>
+          <div class="download-row-actions">
+            <a class="download-btn" href="/api/films/${f.nummer}/export" download>Download</a>
+            <button type="button" class="reopen-btn" data-nummer="${f.nummer}" title="Wieder öffnen">Öffnen</button>
+            <button type="button" class="delete-btn" data-nummer="${f.nummer}" title="Löschen">Löschen</button>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = `
+        ${nichtEntwickelt.length ? `<p class="dashboard-label">Nicht entwickelt</p>${nichtEntwickelt.map(zeile).join("")}` : ""}
+        ${entwickelt.length ? `<p class="dashboard-label">Entwickelt</p>${entwickelt.map(zeile).join("")}` : ""}
+      `;
 
       container.querySelectorAll(".reopen-btn").forEach(btn => {
         btn.onclick = async () => {
@@ -547,18 +544,31 @@
         };
       });
 
+      container.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.onclick = async () => {
+          const nummer = btn.dataset.nummer;
+          if (!confirm(`Film #${nummer} wirklich unwiderruflich löschen? Vorher solltest du das Protokoll heruntergeladen haben.`)) return;
+          try {
+            await api(`/api/films/${nummer}`, { method: "DELETE" });
+            initDownloads();
+          } catch (err) {
+            alert(err.message);
+          }
+        };
+      });
+
       container.querySelectorAll(".entwickelt-checkbox").forEach(cb => {
         cb.onchange = async () => {
           const nummer = cb.dataset.nummer;
           try {
             await api(`/api/films/${nummer}/entwickelt`, { method: cb.checked ? "POST" : "DELETE" });
+            initDownloads();
           } catch (err) {
             alert(err.message);
             cb.checked = !cb.checked;
           }
         };
       });
-
     } catch (err) {
       container.innerHTML = `<p class="error-msg">${escapeHtml(err.message)}</p>`;
     }
