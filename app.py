@@ -96,6 +96,7 @@ def film_summary(nummer, film):
         "anzahl_aufnahmen": len(film.get("aufnahmen", [])),
         "kapazitaet": film.get("kapazitaet"),
         "entwickelt": film.get("entwickelt", False),
+        "filmtyp": film.get("filmtyp"),
     }
 
 
@@ -118,6 +119,7 @@ def get_films():
     result.sort(key=lambda f: f["nummer"], reverse=True)
     return jsonify(result)
 
+FILMTYPEN = {"sw", "farbe", "anderes"}
 
 @app.route("/api/films", methods=["POST"])
 def create_film():
@@ -126,6 +128,9 @@ def create_film():
     kamera = (payload.get("kamera") or "").strip()
     ablaufdatum = (payload.get("ablaufdatum") or "").strip()
     kapazitaet_raw = (payload.get("kapazitaet") or "").strip()
+    filmtyp = (payload.get("filmtyp") or "").strip()
+    if filmtyp not in FILMTYPEN:
+        filmtyp = ""
 
     if not name or not kamera:
         return jsonify({"error": "Filmname und Kamera sind erforderlich."}), 400
@@ -145,6 +150,7 @@ def create_film():
             "kamera": kamera,
             "ablaufdatum": ablaufdatum or None,
             "kapazitaet": kapazitaet,
+            "filmtyp": filmtyp,
             "status": "offen",
             "angelegt_am": datetime.now().isoformat(timespec="seconds"),
             "aufnahmen": [],
@@ -306,6 +312,9 @@ def recent_aufnahmen():
             row = dict(eintrag)
             row["film_nummer"] = int(nummer)
             row["film_kamera"] = film["kamera"]
+            row["film_name"] = film["name"]
+            row["film_kamera"] = film["kamera"]
+            row["film_typ"] = film.get("filmtyp")
             row["film_name"] = film["name"]
             row["frame_nr"] = idx
             alle.append(row)

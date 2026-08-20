@@ -214,7 +214,7 @@
               ${voll ? `<button type="button" class="dashboard-done-btn" data-nummer="${f.nummer}" data-kamera="${escapeHtml(f.kamera)}" title="Film abschließen">✓</button>` : ""}
               <div class="dashboard-info">
                 <div class="dashboard-kamera">${escapeHtml(f.kamera)}</div>
-                <div class="dashboard-film">${escapeHtml(f.name)} · #${f.nummer}</div>
+                <div class="dashboard-film">${escapeHtml(f.name)} ${filmtypEmoji(f.filmtyp)} #${f.nummer}</div>
                 ${balken}
               </div>
               <div class="dashboard-count">${f.anzahl_aufnahmen}${f.kapazitaet ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
@@ -297,6 +297,12 @@
         showError(form, err.message);
       }
     };
+  }
+
+  function filmtypEmoji(typ) {
+    if (typ === "sw") return "🖤";
+    if (typ === "farbe") return "🌈";
+    return "";
   }
 
   // ---------- Neue Aufnahme ----------
@@ -499,7 +505,7 @@
         ? filme.map(f => `
             <div class="download-row">
               <div class="download-row-info">
-                <div class="download-row-title">#${String(f.nummer)} — ${escapeHtml(f.name)}</div>
+                <div class="download-row-title">#${String(f.nummer)} — ${escapeHtml(f.name)} ${filmtypEmoji(f.filmtyp)}</div>
                 <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen</div>
                 <label class="entwickelt-toggle">
                   <input type="checkbox" class="entwickelt-checkbox" data-nummer="${f.nummer}" ${f.entwickelt ? "checked" : ""}>
@@ -573,7 +579,7 @@
         <div class="frame-nr">${a.film_kamera ? escapeHtml(kameraKuerzel(a.film_kamera)) : String(a.frame_nr)}</div>
         <div>
   ${a.motiv ? `<div class="frame-motiv">${escapeHtml(a.motiv)}</div>` : ""}
-  ${mitFilmname ? `<div class="frame-film">${escapeHtml(a.film_name)}</div>` : ""}
+  ${mitFilmname ? `<div class="frame-film">${escapeHtml(a.film_name)} ${filmtypEmoji(a.film_typ)}</div>` : ""}
           <div class="frame-meta">
   ${escapeHtml(a.datum || "")} ${escapeHtml(a.uhrzeit || "")}
           </div>
