@@ -250,7 +250,9 @@
     try {
       const liste = await api("/api/aufnahmen/recent?limit=1");
       if (liste.length) {
-        letzteContainer.innerHTML = `<p class="dashboard-label">Zuletzt</p>${renderFrames(liste, true)}`;
+        const alterMs = Date.now() - new Date(liste[0].aufgenommen_am).getTime();
+        const frisch = alterMs <= 2 * 60 * 1000;
+        letzteContainer.innerHTML = `<p class="dashboard-label">Zuletzt${frisch ? ` <span class="frisch-punkt" title="Vor weniger als 2 Minuten aufgenommen"></span>` : ""}</p>${renderFrames(liste, true)}`;
         letzteContainer.querySelector(".frame").onclick = () => navigate("zuletzt");
       } else {
         letzteContainer.innerHTML = "";
