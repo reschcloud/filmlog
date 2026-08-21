@@ -209,12 +209,14 @@
           const balken = f.kapazitaet
             ? `<div class="dashboard-fill-track"><div class="dashboard-fill-bar${voll ? " dashboard-fill-voll" : ""}" style="width:${Math.min(100, Math.round(f.anzahl_aufnahmen / f.kapazitaet * 100))}%"></div></div>`
             : "";
+          const eckeKlasse = f.filmtyp === "sw" ? "dashboard-typ-sw" : f.filmtyp === "farbe" ? "dashboard-typ-farbe" : "";
           return `
             <div class="dashboard-card" data-film-nummer="${f.nummer}">
+              ${eckeKlasse ? `<div class="dashboard-typ-ecke ${eckeKlasse}"></div>` : ""}
               ${voll ? `<button type="button" class="dashboard-done-btn" data-nummer="${f.nummer}" data-kamera="${escapeHtml(f.kamera)}" title="Film abschließen">✓</button>` : ""}
               <div class="dashboard-info">
                 <div class="dashboard-kamera">${escapeHtml(f.kamera)}</div>
-                <div class="dashboard-film">${escapeHtml(f.name)} ${filmtypEmoji(f.filmtyp)} #${f.nummer}</div>
+                <div class="dashboard-film">${escapeHtml(f.name)} #${f.nummer}</div>
                 ${balken}
               </div>
               <div class="dashboard-count">${f.anzahl_aufnahmen}${f.kapazitaet ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
@@ -510,23 +512,27 @@
       const nichtEntwickelt = filme.filter(f => !f.entwickelt);
       const entwickelt = filme.filter(f => f.entwickelt);
 
-      const zeile = f => `
-        <div class="download-row">
-          <div class="download-row-info">
-            <div class="download-row-title">${filmtypEmoji(f.filmtyp)} Nr. ${String(f.nummer)} — ${escapeHtml(f.name)}</div>
-            <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen</div>
-            <label class="entwickelt-toggle">
-              <input type="checkbox" class="entwickelt-checkbox" data-nummer="${f.nummer}" ${f.entwickelt ? "checked" : ""}>
-              Entwickelt
-            </label>
+      const zeile = f => {
+        const eckeKlasse = f.filmtyp === "sw" ? "dashboard-typ-sw" : f.filmtyp === "farbe" ? "dashboard-typ-farbe" : "";
+        return `
+          <div class="download-row">
+            ${eckeKlasse ? `<div class="dashboard-typ-ecke ${eckeKlasse}"></div>` : ""}
+            <div class="download-row-info">
+              <div class="download-row-title">#${String(f.nummer)} — ${escapeHtml(f.name)}</div>
+              <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen</div>
+              <label class="entwickelt-toggle">
+                <input type="checkbox" class="entwickelt-checkbox" data-nummer="${f.nummer}" ${f.entwickelt ? "checked" : ""}>
+                Entwickelt
+              </label>
+            </div>
+            <div class="download-row-actions">
+              <a class="download-btn" href="/api/films/${f.nummer}/export" download>Download</a>
+              <button type="button" class="reopen-btn" data-nummer="${f.nummer}" title="Wieder öffnen">Öffnen</button>
+              <button type="button" class="delete-btn" data-nummer="${f.nummer}" title="Löschen">Löschen</button>
+            </div>
           </div>
-          <div class="download-row-actions">
-            <a class="download-btn" href="/api/films/${f.nummer}/export" download>Download</a>
-            <button type="button" class="reopen-btn" data-nummer="${f.nummer}" title="Wieder öffnen">Öffnen</button>
-            <button type="button" class="delete-btn" data-nummer="${f.nummer}" title="Löschen">Löschen</button>
-          </div>
-        </div>
-      `;
+        `;
+      };
 
       container.innerHTML = `
         ${nichtEntwickelt.length ? `<p class="dashboard-label">Nicht entwickelt</p>${nichtEntwickelt.map(zeile).join("")}` : ""}
@@ -586,17 +592,20 @@
   }
 
   function renderFrames(liste, mitFilmname, mitAktionen = false) {
-    return liste.map(a => `
+    return liste.map(a => {
+      const eckeKlasse = a.film_typ === "sw" ? "dashboard-typ-sw" : a.film_typ === "farbe" ? "dashboard-typ-farbe" : "";
+      return `
       <div class="frame">
+        ${eckeKlasse ? `<div class="dashboard-typ-ecke ${eckeKlasse}"></div>` : ""}
         <div class="frame-nr">${a.film_kamera ? escapeHtml(kameraKuerzel(a.film_kamera)) : String(a.frame_nr)}</div>
         <div>
   ${a.motiv ? `<div class="frame-motiv">${escapeHtml(a.motiv)}</div>` : ""}
-  ${mitFilmname ? `<div class="frame-film">${escapeHtml(a.film_name)} ${filmtypEmoji(a.film_typ)}</div>` : ""}
+  ${mitFilmname ? `<div class="frame-film">${escapeHtml(a.film_kamera)} · ${escapeHtml(a.film_name)}</div>` : ""}
           <div class="frame-meta">
   ${escapeHtml(a.datum || "")} ${escapeHtml(a.uhrzeit || "")}
           </div>
           <div class="frame-meta">
-  ${a.objektiv ? escapeHtml(a.objektiv) : ""}
+  ${a.objektiv ? escapeHtml(a.objektiv) : ""} · ${a.objektiv ? escapeHtml(a.brennweite) : ""}
           </div>
           <div class="frame-meta">
   ${a.belichtungszeit ? escapeHtml(a.belichtungszeit) + " " : ""}
@@ -605,7 +614,8 @@
   ${mitAktionen ? `<button type="button" class="frame-delete-btn" data-film-nummer="${a.film_nummer}" data-frame-nr="${a.frame_nr}" data-frame-title="${escapeHtml(a.motiv || `Aufnahme ${a.frame_nr}`)}">Löschen</button>` : ""}
         </div>
       </div>
-    `).join("");
+    `;
+    }).join("");
   }
 
   function escapeHtml(str) {
