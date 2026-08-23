@@ -502,6 +502,9 @@
   // ---------- Downloads ----------
   async function initDownloads() {
     const container = document.getElementById("downloadsListe");
+    const archivCheckbox = document.getElementById("archivCheckbox");
+    archivCheckbox.onchange = () => initDownloads();
+
     container.innerHTML = `<p class="empty-state">Wird geladen …</p>`;
     try {
       const filme = await api("/api/films?status=abgeschlossen");
@@ -509,8 +512,6 @@
         container.innerHTML = `<p class="empty-state">Noch kein Film abgeschlossen.</p>`;
         return;
       }
-      const nichtEntwickelt = filme.filter(f => !f.entwickelt);
-      const entwickelt = filme.filter(f => f.entwickelt);
 
       const zeile = f => {
         const eckeKlasse = f.filmtyp === "sw" ? "dashboard-typ-sw" : f.filmtyp === "farbe" ? "dashboard-typ-farbe" : "";
@@ -527,17 +528,36 @@
             </div>
             <div class="download-row-actions">
               <a class="download-btn" href="/api/films/${f.nummer}/export" download>Download</a>
-              <button type="button" class="reopen-btn" data-nummer="${f.nummer}" title="Wieder öffnen">Öffnen</button>
-              <button type="button" class="delete-btn" data-nummer="${f.nummer}" title="Löschen">Löschen</button>
+              <button type="button" class="reopen-btn" data-nummer="${f.nummer}" title="Wieder öffnen">Reopen</button>
+              ${f.entwickelt ? `<button type="button" class="archivieren-btn" data-nummer="${f.nummer}" data-archiviert="${f.archiviert ? "1" : "0"}">${f.archiviert ? "Entarchivieren" : "Archivieren"}</button>` : ""}
             </div>
           </div>
         `;
       };
 
-      container.innerHTML = `
-        ${nichtEntwickelt.length ? `<p class="dashboard-label">Nicht entwickelt</p>${nichtEntwickelt.map(zeile).join("")}` : ""}
-        ${entwickelt.length ? `<p class="dashboard-label">Entwickelt</p>${entwickelt.map(zeile).join("")}` : ""}
-      `;
+      const sichtbar = filme.filter(f => !f.archiviert);
+      const archiviert = filme.filter(f => f.archiviert);
+      const nichtEntwickelt = sichtbar.filter(f => !f.entwickelt);
+      const entwickelt = sichtbar.filter(f => f.entwickelt);
+
+      let html = "";
+      html += nichtEntwickelt.length ? `<p class="dashboard-label">Nicht entwickelt</p>${nichtEntwickelt.map(zeile).join("")}` : "";
+      html += entwickelt.length ? `<p class="dashboard-label">Entwickelt</p>${entwickelt.map(zeile).join("")}` : "";
+
+      if (archivCheckbox.checked && archiviert.length) {
+        const nachJahr = {};
+        archiviert.forEach(f => {
+          const jahr = (f.abgeschlossen_am || f.angelegt_am || "").slice(0, 4) || "Unbekannt";
+          (nachJahr[jahr] = nachJahr[jahr] || []).push(f);
+        });
+        const jahre = Object.keys(nachJahr).sort((a, b) => b.localeCompare(a));
+        html += `<p class="dashboard-label">Archiviert</p>`;
+        jahre.forEach(jahr => {
+          html += `<p class="dashboard-label dashboard-label-jahr">${jahr}</p>${nachJahr[jahr].map(zeile).join("")}`;
+        });
+      }
+
+      container.innerHTML = html || `<p class="empty-state">Noch kein Film abgeschlossen.</p>`;
 
       container.querySelectorAll(".reopen-btn").forEach(btn => {
         btn.onclick = async () => {
@@ -552,12 +572,12 @@
         };
       });
 
-      container.querySelectorAll(".delete-btn").forEach(btn => {
+      container.querySelectorAll(".archivieren-btn").forEach(btn => {
         btn.onclick = async () => {
           const nummer = btn.dataset.nummer;
-          if (!confirm(`Film #${nummer} wirklich unwiderruflich löschen? Vorher solltest du das Protokoll heruntergeladen haben.`)) return;
+          const istArchiviert = btn.dataset.archiviert === "1";
           try {
-            await api(`/api/films/${nummer}`, { method: "DELETE" });
+            await api(`/api/films/${nummer}/archivieren`, { method: istArchiviert ? "DELETE" : "POST" });
             initDownloads();
           } catch (err) {
             alert(err.message);

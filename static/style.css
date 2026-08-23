@@ -28,20 +28,8 @@ src: url('/static/fonts/LeagueGothic-Regular.otf');
 }
 @font-face {
 font-family: LeagueGothic-CondensedRegular;
-src: url('/static/fonts/LeagueGothic-CondensedRegular.otf');.reopen-btn {
-  font-family: var(--font-mono);
-  font-size: var(--medium);
-  background: none;
-  color: var(--amber);
-  border: 1px solid var(--amber);
-  border-radius: 999px;
-  padding: 8px 16px;
-  cursor: pointer;
-  white-space: nowrap;
+src: url('/static/fonts/LeagueGothic-CondensedRegular.otf');
 }
-.reopen-btn:hover { background: var(--amber); color: var(--bg); }
-}
-
 @font-face {
 font-family: TMT-LimkinVF;
 src: url('/static/fonts/TMT-LimkinVF.woff');
@@ -575,6 +563,20 @@ body {
 }
 .reopen-btn:hover { background: var(--amber-dim); }
 
+.archivieren-btn {
+  font-family: var(--font-display);
+  font-size: var(--small);
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--paper);
+  background: var(--amber);
+  padding: 8px 16px 2px;
+  border-radius: 999px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.archivieren-btn:hover { background: var(--amber-dim); }
+
 .download-row-actions {
   display: flex;
   gap: 12px;
@@ -613,6 +615,24 @@ body {
   font-family: var(--font-mono);
   font-size: var(--medium);
   margin: 0;
+}
+
+.archiv-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.archiv-toggle input { accent-color: var(--amber); cursor: pointer; }
+
+.dashboard-label-jahr {
+  margin-left: 8px;
+  font-size: 11px;
+  opacity: 0.8;
 }
 
 .uhrzeit-row {

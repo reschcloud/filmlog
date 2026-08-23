@@ -93,10 +93,12 @@ def film_summary(nummer, film):
         "ablaufdatum": film.get("ablaufdatum"),
         "status": film["status"],
         "angelegt_am": film.get("angelegt_am"),
+        "abgeschlossen_am": film.get("abgeschlossen_am"),
         "anzahl_aufnahmen": len(film.get("aufnahmen", [])),
         "kapazitaet": film.get("kapazitaet"),
         "entwickelt": film.get("entwickelt", False),
         "filmtyp": film.get("filmtyp"),
+        "archiviert": film.get("archiviert", False),
     }
 
 
@@ -236,6 +238,31 @@ def entferne_entwickelt_markierung(nummer):
         if not film:
             return jsonify({"error": "Film nicht gefunden."}), 404
         film["entwickelt"] = False
+        save_db(db)
+        data = film_summary(str(nummer), film)
+    return jsonify(data)
+
+@app.route("/api/films/<int:nummer>/archivieren", methods=["POST"])
+def archiviere_film(nummer):
+    with _lock:
+        db = load_db()
+        film = db["films"].get(str(nummer))
+        if not film:
+            return jsonify({"error": "Film nicht gefunden."}), 404
+        film["archiviert"] = True
+        save_db(db)
+        data = film_summary(str(nummer), film)
+    return jsonify(data)
+
+
+@app.route("/api/films/<int:nummer>/archivieren", methods=["DELETE"])
+def entarchiviere_film(nummer):
+    with _lock:
+        db = load_db()
+        film = db["films"].get(str(nummer))
+        if not film:
+            return jsonify({"error": "Film nicht gefunden."}), 404
+        film["archiviert"] = False
         save_db(db)
         data = film_summary(str(nummer), film)
     return jsonify(data)
