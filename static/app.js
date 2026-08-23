@@ -527,7 +527,7 @@
               </label>
             </div>
             <div class="download-row-actions">
-              <a class="download-btn" href="/api/films/${f.nummer}/export" download>Download</a>
+              <a class="download-btn" href="/api/films/${f.nummer}/export" download>⬇️</a>
               <button type="button" class="reopen-btn" data-nummer="${f.nummer}" title="Wieder öffnen">Reopen</button>
               ${f.entwickelt ? `<button type="button" class="archivieren-btn" data-nummer="${f.nummer}" data-archiviert="${f.archiviert ? "1" : "0"}">${f.archiviert ? "Entarchivieren" : "Archivieren"}</button>` : ""}
             </div>

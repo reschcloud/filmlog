@@ -629,12 +629,6 @@ body {
 }
 .archiv-toggle input { accent-color: var(--amber); cursor: pointer; }
 
-.dashboard-label-jahr {
-  margin-left: 8px;
-  font-size: 11px;
-  opacity: 0.8;
-}
-
 .uhrzeit-row {
   display: flex;
   gap: 8px;
@@ -664,6 +658,11 @@ body {
   text-transform: uppercase;
   color: var(--muted);
   margin: 34px 0 18px;
+}
+.dashboard-label-jahr {
+  margin-top: 0;
+  margin-left: 8px;
+  opacity: 0.8;
 }
 .dashboard-grid {
   display: flex;
