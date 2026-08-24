@@ -263,6 +263,19 @@
     } catch (err) {
       letzteContainer.innerHTML = "";
     }
+    const downloadsDesc = document.getElementById("downloadsTileDesc");
+    try {
+      const abgeschlosseneFilme = await api("/api/films?status=abgeschlossen");
+      const nichtEntwickelt = abgeschlosseneFilme.filter(f => !f.entwickelt);
+      const anzahlSw = nichtEntwickelt.filter(f => f.filmtyp === "sw").length;
+      const anzahlFarbe = nichtEntwickelt.filter(f => f.filmtyp === "farbe").length;
+
+      downloadsDesc.textContent = nichtEntwickelt.length
+        ? `Zu entwickeln: 🏁 ${anzahlSw} · 🌈 ${anzahlFarbe}`
+        : "Protokolle abgeschlossener Filme herunterladen";
+    } catch (err) {
+      // Original-Text bleibt stehen, kein Blockieren der Startseite.
+    }
   }
 
   // ---------- Neuer Film ----------
@@ -518,21 +531,26 @@
         return;
       }
 
+      const sortierDatum = f => f.abgeschlossen_am || f.angelegt_am || "";
+      filme.sort((a, b) => sortierDatum(b).localeCompare(sortierDatum(a)));
       const zeile = f => {
         const eckeKlasse = f.filmtyp === "sw" ? "dashboard-typ-sw" : f.filmtyp === "farbe" ? "dashboard-typ-farbe" : "";
+        const datum = (f.abgeschlossen_am || f.angelegt_am || "").slice(0, 10);
         return `
           <div class="download-row">
             ${eckeKlasse ? `<div class="dashboard-typ-ecke ${eckeKlasse}"></div>` : ""}
             <div class="download-row-info">
               <div class="download-row-title">#${String(f.nummer)} — ${escapeHtml(f.name)}</div>
-              <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen</div>
+              <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen${datum ? ` · ${datum}` : ""}</div>
               <label class="entwickelt-toggle">
-                <input type="checkbox" class="entwickelt-checkbox" data-nummer="${f.nummer}" ${f.entwickelt ? "checked" : ""}>
+                ${f.entwickelt
+                  ? `<input type="checkbox" checked disabled>`
+                  : `<input type="checkbox" class="entwickelt-checkbox" data-nummer="${f.nummer}">`}
                 Entwickelt
               </label>
             </div>
             <div class="download-row-actions">
-              <a class="download-btn" href="/api/films/${f.nummer}/export" download>⬇️</a>
+              <a class="download-btn" href="/api/films/${f.nummer}/export" download>Download</a>
               <button type="button" class="reopen-btn" data-nummer="${f.nummer}" title="Wieder öffnen">Reopen</button>
               ${f.entwickelt ? `<button type="button" class="archivieren-btn" data-nummer="${f.nummer}" data-archiviert="${f.archiviert ? "1" : "0"}">${f.archiviert ? "Entarchivieren" : "Archivieren"}</button>` : ""}
             </div>
@@ -594,11 +612,11 @@
         cb.onchange = async () => {
           const nummer = cb.dataset.nummer;
           try {
-            await api(`/api/films/${nummer}/entwickelt`, { method: cb.checked ? "POST" : "DELETE" });
+            await api(`/api/films/${nummer}/entwickelt`, { method: "POST" });
             initDownloads();
           } catch (err) {
             alert(err.message);
-            cb.checked = !cb.checked;
+            cb.checked = false;
           }
         };
       });

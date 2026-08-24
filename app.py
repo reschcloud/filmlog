@@ -232,19 +232,6 @@ def markiere_entwickelt(nummer):
         data = film_summary(str(nummer), film)
     return jsonify(data)
 
-
-@app.route("/api/films/<int:nummer>/entwickelt", methods=["DELETE"])
-def entferne_entwickelt_markierung(nummer):
-    with _lock:
-        db = load_db()
-        film = db["films"].get(str(nummer))
-        if not film:
-            return jsonify({"error": "Film nicht gefunden."}), 404
-        film["entwickelt"] = False
-        save_db(db)
-        data = film_summary(str(nummer), film)
-    return jsonify(data)
-
 @app.route("/api/films/<int:nummer>/archivieren", methods=["POST"])
 def archiviere_film(nummer):
     with _lock:

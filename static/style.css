@@ -546,6 +546,7 @@ body {
   border-radius: 999px;
   white-space: nowrap;
   text-transform: uppercase;
+  border: none;
 }
 .download-btn:hover { background: var(--amber-dim); }
 
@@ -560,6 +561,7 @@ body {
   border-radius: 999px;
   white-space: nowrap;
   text-transform: uppercase;
+  border: none;
 }
 .reopen-btn:hover { background: var(--amber-dim); }
 
@@ -574,6 +576,7 @@ body {
   border-radius: 999px;
   white-space: nowrap;
   text-transform: uppercase;
+  border: none;
 }
 .archivieren-btn:hover { background: var(--amber-dim); }
 
