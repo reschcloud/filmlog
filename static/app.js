@@ -210,6 +210,7 @@
             ? `<div class="dashboard-fill-track"><div class="dashboard-fill-bar${voll ? " dashboard-fill-voll" : ""}" style="width:${Math.min(100, Math.round(f.anzahl_aufnahmen / f.kapazitaet * 100))}%"></div></div>`
             : "";
           const eckeKlasse = f.filmtyp === "sw" ? "dashboard-typ-sw" : f.filmtyp === "farbe" ? "dashboard-typ-farbe" : "";
+          const verbleibend = f.kapazitaet ? Math.max(0, f.kapazitaet - f.anzahl_aufnahmen) : null;
           return `
             <div class="dashboard-card" data-film-nummer="${f.nummer}">
               ${eckeKlasse ? `<div class="dashboard-typ-ecke ${eckeKlasse}"></div>` : ""}
@@ -219,7 +220,7 @@
                 <div class="dashboard-film">${escapeHtml(f.name)} #${f.nummer}</div>
                 ${balken}
               </div>
-              <div class="dashboard-count">${f.anzahl_aufnahmen}${f.kapazitaet ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
+              <div class="dashboard-count">${verbleibend !== null ? verbleibend : f.anzahl_aufnahmen}${verbleibend !== null ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
             </div>
           `;
         }).join("")}</div>`
@@ -288,6 +289,10 @@
       const payload = Object.fromEntries(fd);
       if (!payload.name || !payload.kamera) {
         showError(form, "Bitte Filmname und Kamera auswählen.");
+        return;
+      }
+      if (!payload.kapazitaet || Number(payload.kapazitaet) <= 0) {
+        showError(form, "Bitte Anzahl Aufnahmen angeben.");
         return;
       }
       try {

@@ -151,7 +151,10 @@ def create_film():
         return jsonify({"error": "Filmname und Kamera sind erforderlich."}), 400
     if ablaufdatum and not re.fullmatch(r"\d{4}", ablaufdatum):
         return jsonify({"error": "Ablaufjahr muss eine vierstellige Jahreszahl sein."}), 400
-    kapazitaet = None
+    kapazitaet_raw = (payload.get("kapazitaet") or "").strip()
+    if not kapazitaet_raw or not kapazitaet_raw.isdigit() or int(kapazitaet_raw) <= 0:
+        return jsonify({"error": "Anzahl Aufnahmen ist ein Pflichtfeld und muss eine positive Zahl sein."}), 400
+    kapazitaet = int(kapazitaet_raw)
     if kapazitaet_raw:
         if not kapazitaet_raw.isdigit() or int(kapazitaet_raw) <= 0:
             return jsonify({"error": "Anzahl Aufnahmen muss eine positive Zahl sein."}), 400
