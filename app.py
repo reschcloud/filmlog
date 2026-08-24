@@ -94,6 +94,7 @@ def film_summary(nummer, film):
         "status": film["status"],
         "angelegt_am": film.get("angelegt_am"),
         "abgeschlossen_am": film.get("abgeschlossen_am"),
+        "entwickelt_am": film.get("entwickelt_am"),
         "anzahl_aufnahmen": len(film.get("aufnahmen", [])),
         "kapazitaet": film.get("kapazitaet"),
         "entwickelt": film.get("entwickelt", False),
@@ -228,6 +229,7 @@ def markiere_entwickelt(nummer):
         if not film:
             return jsonify({"error": "Film nicht gefunden."}), 404
         film["entwickelt"] = True
+        film["entwickelt_am"] = datetime.now().isoformat(timespec="seconds")
         save_db(db)
         data = film_summary(str(nummer), film)
     return jsonify(data)

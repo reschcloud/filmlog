@@ -466,7 +466,7 @@ body {
 }
 .mehr-btn:hover { color: var(--paper-dim); }
 
-.frame-delete-btn {
+.frame-delete-btn, .entwickeln-btn {
   font-family: var(--font-display);
   font-size: var(--small);
   font-weight: 700;
@@ -475,12 +475,13 @@ body {
   border: 1px solid var(--red-dim);
   border-radius: 999px;
   padding: 6px 12px 3px;
+  border: none;
   cursor: pointer;
   white-space: nowrap;
   text-transform: uppercase;
   margin-top: 6px;
 }
-.frame-delete-btn:hover { background: var(--red-dim); color: var(--paper); }
+.frame-delete-btn:hover, .entwickeln-btn:hover { background: var(--red-dim); color: var(--paper); }
 
 #letzteAufnahme .frame {
   background: var(--paper);
@@ -505,7 +506,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 20px;
 }
 .download-row {
   display: flex;
@@ -536,19 +536,18 @@ body {
   margin-top: 2px;
 }
 .download-btn {
-  font-family: var(--font-display);
-  font-size: var(--small);
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: none;
   text-decoration: none;
-  color: var(--paper);
-  background: var(--amber);
-  padding: 8px 16px 2px;
-  border-radius: 999px;
-  white-space: nowrap;
-  text-transform: uppercase;
-  border: none;
+  font-size: 18px;
 }
-.download-btn:hover { background: var(--amber-dim); }
+.download-btn:hover { background: var(--paper-dim); }
 
 .reopen-btn {
   font-family: var(--font-display);
@@ -557,11 +556,13 @@ body {
   text-decoration: none;
   color: var(--paper);
   background: var(--amber);
-  padding: 8px 16px 2px;
+  padding: 6px 12px 3px;
   border-radius: 999px;
   white-space: nowrap;
   text-transform: uppercase;
   border: none;
+  margin-top: 6px;
+
 }
 .reopen-btn:hover { background: var(--amber-dim); }
 
@@ -572,11 +573,12 @@ body {
   text-decoration: none;
   color: var(--paper);
   background: var(--amber);
-  padding: 8px 16px 2px;
+  padding: 6px 12px 3px;
   border-radius: 999px;
   white-space: nowrap;
   text-transform: uppercase;
   border: none;
+  margin-top: 6px;
 }
 .archivieren-btn:hover { background: var(--amber-dim); }
 
@@ -594,10 +596,11 @@ body {
   color: var(--paper);
   border: 1px solid var(--red-dim);
   border-radius: 999px;
-  padding: 8px 16px 2px;
+  padding: 6px 12px 3px;
   cursor: pointer;
   white-space: nowrap;
   text-transform: uppercase;
+  margin-top: 6px;
 }
 .delete-btn:hover { background: var(--red-dim); color: var(--paper); }
 
@@ -624,9 +627,8 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin: 0 0 20px;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--medium);
   color: var(--muted);
   cursor: pointer;
 }

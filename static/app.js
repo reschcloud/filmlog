@@ -535,24 +535,22 @@
       filme.sort((a, b) => sortierDatum(b).localeCompare(sortierDatum(a)));
       const zeile = f => {
         const eckeKlasse = f.filmtyp === "sw" ? "dashboard-typ-sw" : f.filmtyp === "farbe" ? "dashboard-typ-farbe" : "";
-        const datum = (f.abgeschlossen_am || f.angelegt_am || "").slice(0, 10);
+        const abgeschlossenDatum = (f.abgeschlossen_am || "").slice(0, 10);
+        const angelegtDatum = (f.angelegt_am || "").slice(0, 10);
+        const entwickeltDatum = (f.entwickelt_am || "").slice(0, 10);
         return `
           <div class="download-row">
             ${eckeKlasse ? `<div class="dashboard-typ-ecke ${eckeKlasse}"></div>` : ""}
             <div class="download-row-info">
               <div class="download-row-title">#${String(f.nummer)} — ${escapeHtml(f.name)}</div>
-              <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen${datum ? ` · ${datum}` : ""}</div>
-              <label class="entwickelt-toggle">
-                ${f.entwickelt
-                  ? `<input type="checkbox" checked disabled>`
-                  : `<input type="checkbox" class="entwickelt-checkbox" data-nummer="${f.nummer}">`}
-                Entwickelt
-              </label>
+              <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen${f.ablaufdatum ? ` · Ablaufjahr ${f.ablaufdatum}` : ""}</div>
+              ${angelegtDatum ? `<div class="download-row-meta">Angelegt: ${angelegtDatum}</div>` : ""}
+              ${f.entwickelt && entwickeltDatum ? `<div class="download-row-meta">Entwickelt: ${entwickeltDatum}</div>` : ""}
             </div>
             <div class="download-row-actions">
-              <a class="download-btn" href="/api/films/${f.nummer}/export" download>Download</a>
-              <button type="button" class="reopen-btn" data-nummer="${f.nummer}" title="Wieder öffnen">Reopen</button>
-              ${f.entwickelt ? `<button type="button" class="archivieren-btn" data-nummer="${f.nummer}" data-archiviert="${f.archiviert ? "1" : "0"}">${f.archiviert ? "Entarchivieren" : "Archivieren"}</button>` : ""}
+              <a class="download-btn" href="/api/films/${f.nummer}/export" download title="Protokoll herunterladen">📥</a>
+              ${!f.entwickelt ? `<button type="button" class="entwickeln-btn" data-nummer="${f.nummer}">Entwickelt</button>` : ""}
+              ${f.entwickelt ? `<button type="button" class="archivieren-btn" data-nummer="${f.nummer}" data-archiviert="${f.archiviert ? "1" : "0"}">${f.archiviert ? "Dearchivieren" : "Archivieren"}</button>` : ""}
             </div>
           </div>
         `;
@@ -608,15 +606,15 @@
         };
       });
 
-      container.querySelectorAll(".entwickelt-checkbox").forEach(cb => {
-        cb.onchange = async () => {
-          const nummer = cb.dataset.nummer;
+      container.querySelectorAll(".entwickeln-btn").forEach(btn => {
+        btn.onclick = async () => {
+          const nummer = btn.dataset.nummer;
+          if (!confirm(`Film #${nummer} als entwickelt markieren?`)) return;
           try {
             await api(`/api/films/${nummer}/entwickelt`, { method: "POST" });
             initDownloads();
           } catch (err) {
             alert(err.message);
-            cb.checked = false;
           }
         };
       });
