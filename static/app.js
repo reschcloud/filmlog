@@ -211,13 +211,18 @@
             : "";
           const eckeKlasse = f.filmtyp === "sw" ? "dashboard-typ-sw" : f.filmtyp === "farbe" ? "dashboard-typ-farbe" : "";
           const verbleibend = f.kapazitaet ? Math.max(0, f.kapazitaet - f.anzahl_aufnahmen) : null;
+          const jetzt = new Date().getFullYear();
+          const jahreAbgelaufen = f.ablaufdatum ? jetzt - parseInt(f.ablaufdatum, 10) : 0;
+          const ablaufPille = jahreAbgelaufen > 0
+            ? `<span class="ablauf-pille">${jahreAbgelaufen} Jahr${jahreAbgelaufen === 1 ? "" : "e"}</span>`
+            : "";
           return `
             <div class="dashboard-card" data-film-nummer="${f.nummer}">
               ${eckeKlasse ? `<div class="dashboard-typ-ecke ${eckeKlasse}"></div>` : ""}
               ${voll ? `<button type="button" class="dashboard-done-btn" data-nummer="${f.nummer}" data-kamera="${escapeHtml(f.kamera)}" title="Film abschließen">✓</button>` : ""}
               <div class="dashboard-info">
                 <div class="dashboard-kamera">${escapeHtml(f.kamera)}</div>
-                <div class="dashboard-film">${escapeHtml(f.name)} #${f.nummer}</div>
+                <div class="dashboard-film">${escapeHtml(f.name)} #${f.nummer} ${ablaufPille}</div>
                 ${balken}
               </div>
               <div class="dashboard-count">${verbleibend !== null ? verbleibend : f.anzahl_aufnahmen}${verbleibend !== null ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
@@ -538,12 +543,13 @@
         const abgeschlossenDatum = (f.abgeschlossen_am || "").slice(0, 10);
         const angelegtDatum = (f.angelegt_am || "").slice(0, 10);
         const entwickeltDatum = (f.entwickelt_am || "").slice(0, 10);
+        const ablaufPille = `<span class="ablauf-pille">${f.ablaufdatum}</span>`;
         return `
           <div class="download-row">
             ${eckeKlasse ? `<div class="dashboard-typ-ecke ${eckeKlasse}"></div>` : ""}
             <div class="download-row-info">
               <div class="download-row-title">#${String(f.nummer)} — ${escapeHtml(f.name)}</div>
-              <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen${f.ablaufdatum ? ` · Ablaufjahr ${f.ablaufdatum}` : ""}</div>
+              <div class="download-row-meta">${escapeHtml(f.kamera)} · ${f.anzahl_aufnahmen} Aufnahmen${ablaufPille}</div>
               ${angelegtDatum ? `<div class="download-row-meta">Angelegt: ${angelegtDatum}</div>` : ""}
               ${f.entwickelt && entwickeltDatum ? `<div class="download-row-meta">Entwickelt: ${entwickeltDatum}</div>` : ""}
             </div>

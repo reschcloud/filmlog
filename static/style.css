@@ -14,6 +14,7 @@
   --font-display: "TMT-LimkinVF", sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-serif: ui-serif, Georgia, "Liberation Serif", "Times New Roman", serif;
+  --x-small: 10px;
   --small: 12px;
   --medium: 15px;
   --large: 19px
@@ -747,7 +748,18 @@ body {
   text-align: right;
   min-width: 4.5ch;
 }
-
+.ablauf-pille {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--amber);
+  color: var(--paper);
+  font-size: var(--x-small);
+  font-family: var(--font-mono);
+  vertical-align: middle;
+  font-weight: 700;
+}
 .dashboard-card {
   cursor: pointer;
   transition: border-color .15s ease, background .15s ease;
