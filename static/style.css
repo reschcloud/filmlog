@@ -665,10 +665,20 @@ body {
   color: var(--muted);
   margin: 34px 0 18px;
 }
+.dashboard-labels-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 18px;
+}
+.dashboard-labels-row .dashboard-label {
+  margin: 0;
+}
 .dashboard-label-jahr {
   margin-top: 0;
   margin-left: 8px;
   opacity: 0.8;
+  font-size: var(--small);
 }
 .dashboard-grid {
   display: flex;
