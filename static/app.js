@@ -225,7 +225,7 @@
                 <div class="dashboard-film">${escapeHtml(f.name)} #${f.nummer} ${ablaufPille}</div>
                 ${balken}
               </div>
-              <div class="dashboard-count">${verbleibend !== null ? verbleibend : f.anzahl_aufnahmen}${verbleibend !== null ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
+              <div class="dashboard-count">${f.anzahl_aufnahmen}${f.kapazitaet ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
             </div>
           `;
         }).join("")}</div>`
