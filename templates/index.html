@@ -103,9 +103,47 @@
   <section class="view" id="view-neue-aufnahme" data-view="neue-aufnahme" hidden>
     <h1 class="view-title">Neue Aufnahme</h1>
     <form id="formNeueAufnahme" class="card">
+      
+      
       <label>Kamera / Film
         <select name="film_nummer" id="filmSelect" required></select>
       </label>
+
+      <label>Motivbeschreibung
+        <textarea name="motiv" rows="3" placeholder="Was ist auf dem Bild zu sehen?"></textarea>
+      </label>
+
+      <div class="field-row">
+        <label>Belichtungszeit
+          <span class="select-with-add">
+            <select name="belichtungszeit" id="belichtungszeitSelect"></select>
+            <!-- <button type="button" class="add-btn" data-kategorie="belichtungszeiten" data-target="belichtungszeitSelect" title="Neue Belichtungszeit hinzufügen">+</button> -->
+          </span>
+        </label>
+        <label>Blende
+          <span class="select-with-add">
+            <select name="blende" id="blendeSelect"></select>
+            <!-- <button type="button" class="add-btn" data-kategorie="blenden" data-target="blendeSelect" title="Neue Blende hinzufügen">+</button> -->
+          </span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-primary">Aufnahme speichern</button>
+
+      <div class="field-row">
+        <label>Objektiv
+          <span class="select-with-add">
+            <select name="objektiv" id="objektivSelect"></select>
+            <!-- <button type="button" class="add-btn" data-kategorie="objektive" data-target="objektivSelect" title="Neues Objektiv hinzufügen">+</button> -->
+          </span>
+        </label>
+        <label>Brennweite
+          <span class="select-with-add">
+            <select name="brennweite" id="brennweiteSelect"></select>
+            <!-- <button type="button" class="add-btn" data-kategorie="brennweiten" data-target="brennweiteSelect" title="Neue Brennweite hinzufügen">+</button> -->
+          </span>
+        </label>
+      </div>
 
       <div class="field-row">
         <label>Datum
@@ -124,41 +162,12 @@
         <span class="field-note" id="gpsStatus">GPS wird ermittelt …</span>
       </label>
 
-      <div class="field-row">
-        <label>Objektiv
-          <span class="select-with-add">
-            <select name="objektiv" id="objektivSelect"></select>
-            <!-- <button type="button" class="add-btn" data-kategorie="objektive" data-target="objektivSelect" title="Neues Objektiv hinzufügen">+</button> -->
-          </span>
-        </label>
-        <label>Brennweite
-          <span class="select-with-add">
-            <select name="brennweite" id="brennweiteSelect"></select>
-            <!-- <button type="button" class="add-btn" data-kategorie="brennweiten" data-target="brennweiteSelect" title="Neue Brennweite hinzufügen">+</button> -->
-          </span>
-        </label>
-      </div>
-      <div class="field-row">
-        <label>Belichtungszeit
-          <span class="select-with-add">
-            <select name="belichtungszeit" id="belichtungszeitSelect"></select>
-            <!-- <button type="button" class="add-btn" data-kategorie="belichtungszeiten" data-target="belichtungszeitSelect" title="Neue Belichtungszeit hinzufügen">+</button> -->
-          </span>
-        </label>
-        <label>Blende
-          <span class="select-with-add">
-            <select name="blende" id="blendeSelect"></select>
-            <!-- <button type="button" class="add-btn" data-kategorie="blenden" data-target="blendeSelect" title="Neue Blende hinzufügen">+</button> -->
-          </span>
-        </label>
-      </div>
-
-      <label>Motivbeschreibung
-        <textarea name="motiv" rows="3" placeholder="Was ist auf dem Bild zu sehen?"></textarea>
-      </label>
-
       <label>Anzahl <span class="field-optional">(mehrfach speichern)</span>
-        <input type="number" name="anzahl" id="anzahlInput" min="1" max="50" step="1" value="1">
+        <div class="anzahl-stepper">
+          <button type="button" class="anzahl-btn" id="anzahlMinus" aria-label="Weniger">−</button>
+          <input type="number" name="anzahl" id="anzahlInput" min="1" max="50" step="1" value="1" readonly>
+          <button type="button" class="anzahl-btn" id="anzahlPlus" aria-label="Mehr">+</button>
+        </div>
       </label>
 
       <button type="submit" class="btn-primary">Aufnahme speichern</button>

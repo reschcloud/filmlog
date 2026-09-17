@@ -368,7 +368,7 @@ body {
   align-self: flex-start;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--large);
+  font-size: var(--medium);
   letter-spacing: 0.05em;
   background: var(--red);
   color: var(--paper);
@@ -654,6 +654,31 @@ body {
   transition: background .15s ease, color .15s ease;
 }
 .now-btn:hover { background: var(--amber); color: #fff; }
+
+.anzahl-stepper {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+.anzahl-btn {
+  width: 44px;
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  background: var(--paper-dim);
+  color: var(--ink);
+  border: 1px solid var(--paper-dim);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.anzahl-btn:hover { background: var(--amber); color: #fff; }
+.anzahl-stepper input[type="number"] {
+  flex: 1;
+  text-align: center;
+  -webkit-appearance: none;
+  appearance: none;
+}
 
 /* ---- Mini-Dashboard (aktive Film/Kamera-Kombis) ---- */
 

@@ -351,6 +351,14 @@
       form.datum.value = todayStr();
       form.uhrzeit.value = nowTimeStr();
     };
+    document.getElementById("anzahlMinus").onclick = () => {
+      const input = document.getElementById("anzahlInput");
+      input.value = Math.max(1, parseInt(input.value, 10) - 1);
+    };
+    document.getElementById("anzahlPlus").onclick = () => {
+      const input = document.getElementById("anzahlInput");
+      input.value = Math.min(50, parseInt(input.value, 10) + 1);
+    };
     let lat = null, lon = null;
 
     filmSelect.innerHTML = `<option>Filme werden geladen …</option>`;
