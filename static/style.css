@@ -680,6 +680,10 @@ body {
   appearance: none;
 }
 
+button, .anzahl-btn, .add-btn {
+  touch-action: manipulation;
+}
+
 /* ---- Mini-Dashboard (aktive Film/Kamera-Kombis) ---- */
 
 .dashboard-label {
