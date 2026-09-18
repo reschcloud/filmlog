@@ -129,8 +129,6 @@
         </label>
       </div>
 
-      <button type="submit" class="btn-primary">Aufnahme speichern</button>
-
       <div class="field-row">
         <label>Objektiv
           <span class="select-with-add">
@@ -138,13 +136,21 @@
             <!-- <button type="button" class="add-btn" data-kategorie="objektive" data-target="objektivSelect" title="Neues Objektiv hinzufügen">+</button> -->
           </span>
         </label>
-        <label>Brennweite
+        <!-- <label>Brennweite
           <span class="select-with-add">
             <select name="brennweite" id="brennweiteSelect"></select>
-            <!-- <button type="button" class="add-btn" data-kategorie="brennweiten" data-target="brennweiteSelect" title="Neue Brennweite hinzufügen">+</button> -->
+            <button type="button" class="add-btn" data-kategorie="brennweiten" data-target="brennweiteSelect" title="Neue Brennweite hinzufügen">+</button>
           </span>
+        </label> -->
+        <label class="blitz-feld">
+          <label class="blitz-toggle">
+            <input type="checkbox" name="blitz" id="blitzCheckbox">
+            Blitz
+          </label>
         </label>
       </div>
+
+      <button type="submit" class="btn-primary">Aufnahme speichern</button>
 
       <div class="field-row">
         <label>Datum

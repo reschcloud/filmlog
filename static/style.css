@@ -377,6 +377,7 @@ body {
   padding: 8px 20px;
   cursor: pointer;
   transition: background .15s ease, transform .1s ease;
+  width: 100%;
 }
 .btn-primary:hover { background: var(--red-dim); }
 .btn-primary:active { transform: translateY(1px); }
@@ -683,6 +684,19 @@ body {
 button, .anzahl-btn, .add-btn {
   touch-action: manipulation;
 }
+
+.blitz-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: none;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  margin-top: 4px;
+}
+.blitz-toggle input { accent-color: var(--amber); cursor: pointer; width: auto; }
 
 /* ---- Mini-Dashboard (aktive Film/Kamera-Kombis) ---- */
 

@@ -298,6 +298,7 @@ def create_aufnahme():
             "brennweite": (payload.get("brennweite") or "").strip() or None,
             "belichtungszeit": (payload.get("belichtungszeit") or "").strip() or None,
             "blende": (payload.get("blende") or "").strip() or None,
+            "blitz": bool(payload.get("blitz")),
             "motiv": (payload.get("motiv") or "").strip() or None,
             "aufgenommen_am": datetime.now().isoformat(timespec="seconds"),
         }
