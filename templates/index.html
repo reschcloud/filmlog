@@ -51,6 +51,11 @@
         <span class="tile-title">Optionen</span>
         <span class="tile-desc">Filme, Kameras, Objektive &amp; Co. verwalten</span>
       </button>
+      <a class="tile" href="/client/download" download>
+        <span class="tile-glyph">💻</span>
+        <span class="tile-title">Client-Tool</span>
+        <span class="tile-desc">EXIF-Writer (Python) herunterladen</span>
+      </a>
     </div>
   </section>
 
@@ -102,7 +107,7 @@
 
   <!-- NEUE AUFNAHME -->
   <section class="view" id="view-neue-aufnahme" data-view="neue-aufnahme" hidden>
-    <h1 class="view-title">Neue Aufnahme</h1>
+    <!-- <h1 class="view-title">Neue Aufnahme</h1> -->
     <form id="formNeueAufnahme" class="card">
       
       
@@ -111,8 +116,26 @@
       </label>
 
       <label>Motivbeschreibung
-        <textarea name="motiv" rows="3" placeholder="Was ist auf dem Bild zu sehen?"></textarea>
+        <div class="motiv-row">
+          <textarea name="motiv" rows="1" placeholder="Was ist auf dem Bild zu sehen?"></textarea>
+          <button type="button" class="now-btn" id="motivLoeschenBtn" title="Motivbeschreibung leeren">✕</button>
+        </div>
       </label>
+
+      <div class="field-row">
+        <label>Objektiv
+          <span class="select-with-add">
+            <select name="objektiv" id="objektivSelect"></select>
+            <!-- <button type="button" class="add-btn" data-kategorie="objektive" data-target="objektivSelect" title="Neues Objektiv hinzufügen">+</button> -->
+          </span>
+        </label>
+        <label class="blitz-feld">
+          <label class="blitz-toggle">
+            <input type="checkbox" name="blitz" id="blitzCheckbox">
+            Blitz
+          </label>
+        </label>
+      </div>
 
       <div class="field-row">
         <label>Belichtungszeit
@@ -129,28 +152,12 @@
         </label>
       </div>
 
-      <div class="field-row">
-        <label>Objektiv
-          <span class="select-with-add">
-            <select name="objektiv" id="objektivSelect"></select>
-            <!-- <button type="button" class="add-btn" data-kategorie="objektive" data-target="objektivSelect" title="Neues Objektiv hinzufügen">+</button> -->
-          </span>
-        </label>
-        <!-- <label>Brennweite
-          <span class="select-with-add">
-            <select name="brennweite" id="brennweiteSelect"></select>
-            <button type="button" class="add-btn" data-kategorie="brennweiten" data-target="brennweiteSelect" title="Neue Brennweite hinzufügen">+</button>
-          </span>
-        </label> -->
-        <label class="blitz-feld">
-          <label class="blitz-toggle">
-            <input type="checkbox" name="blitz" id="blitzCheckbox">
-            Blitz
-          </label>
-        </label>
-      </div>
-
       <button type="submit" class="btn-primary">Aufnahme speichern</button>
+
+      <label>Ort
+        <input type="text" name="ort_text" id="ortText" placeholder="wird per GPS ermittelt, bei Bedarf anpassen">
+        <span class="field-note" id="gpsStatus">GPS wird ermittelt …</span>
+      </label>
 
       <div class="field-row">
         <label>Datum
@@ -163,11 +170,6 @@
           </div>
         </label>
       </div>
-
-      <label>Ort
-        <input type="text" name="ort_text" id="ortText" placeholder="wird per GPS ermittelt, bei Bedarf anpassen">
-        <span class="field-note" id="gpsStatus">GPS wird ermittelt …</span>
-      </label>
 
       <label>Anzahl <span class="field-optional">(mehrfach speichern)</span>
         <div class="anzahl-stepper">

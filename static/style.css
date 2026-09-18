@@ -646,6 +646,7 @@ body {
   flex-shrink: 0;
   font-family: var(--font-mono);
   font-size: var(--medium);
+  font-weight: 700;
   background: var(--paper-dim);
   color: var(--ink);
   border: 1px solid var(--paper-dim);
@@ -655,6 +656,13 @@ body {
   transition: background .15s ease, color .15s ease;
 }
 .now-btn:hover { background: var(--amber); color: #fff; }
+
+.motiv-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.motiv-row textarea { flex: 1; min-width: 0; }
 
 .anzahl-stepper {
   display: flex;

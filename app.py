@@ -1,6 +1,8 @@
 import os
 import re
 import threading
+import io
+import zipfile
 from datetime import datetime
 
 import yaml
@@ -8,6 +10,7 @@ from flask import Flask, Response, jsonify, request, send_from_directory
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
+CLIENT_DIR = os.path.join(BASE_DIR, "client")
 DB_PATH = os.path.join(DATA_DIR, "db.yaml")
 OPTIONEN_PATH = os.path.join(DATA_DIR, "optionen.yaml")
 
@@ -15,7 +18,6 @@ KATEGORIEN = {
     "filme": "Filme",
     "kameras": "Kameras",
     "objektive": "Objektive",
-    "brennweiten": "Brennweiten",
     "belichtungszeiten": "Belichtungszeiten",
     "blenden": "Blenden",
 }
@@ -29,7 +31,6 @@ def _default_optionen():
         "filme": ["Kodak Tri-X 400 35mm", "Ilford HP5 Plus 400 35mm"],
         "kameras": ["Zenit TTL"],
         "objektive": ["Helios 44-2"],
-        "brennweiten": ["50mm", "58mm"],
         "belichtungszeiten": ["1/60", "1/125", "1/250", "1/500"],
         "blenden": ["f/2.8", "f/4", "f/5.6", "f/8", "f/11", "f/16"],
     }
@@ -295,7 +296,6 @@ def create_aufnahme():
             "ort_lat": payload.get("ort_lat"),
             "ort_lon": payload.get("ort_lon"),
             "objektiv": (payload.get("objektiv") or "").strip() or None,
-            "brennweite": (payload.get("brennweite") or "").strip() or None,
             "belichtungszeit": (payload.get("belichtungszeit") or "").strip() or None,
             "blende": (payload.get("blende") or "").strip() or None,
             "blitz": bool(payload.get("blitz")),
@@ -355,7 +355,7 @@ def recent_aufnahmen():
     alle.sort(key=lambda r: r.get("aufgenommen_am") or "", reverse=True)
     return jsonify(alle[:limit])
 
-UNSORTIERTE_KATEGORIEN = {"brennweiten", "belichtungszeiten", "blenden", "kameras", "objektive", "filme"}
+UNSORTIERTE_KATEGORIEN = {"belichtungszeiten", "blenden", "kameras", "objektive", "filme"}
 
 
 def sortiere_optionen(kategorie, werte):
@@ -431,7 +431,6 @@ def letzte_einstellungen():
 
     return jsonify({
         "objektiv": letzte.get("objektiv"),
-        "brennweite": letzte.get("brennweite"),
         "belichtungszeit": letzte.get("belichtungszeit"),
         "blende": letzte.get("blende"),
         "motiv": letzte.get("motiv"),
@@ -442,6 +441,24 @@ def _slugify(text):
     text = re.sub(r"[^\w\s-]", "", text.lower()).strip()
     return re.sub(r"[-\s]+", "-", text) or "film"
 
+@app.route("/client/download", methods=["GET"])
+def download_client():
+    if not os.path.isdir(CLIENT_DIR):
+        return jsonify({"error": "Client-Ordner nicht gefunden."}), 404
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+        for dateiname in os.listdir(CLIENT_DIR):
+            pfad = os.path.join(CLIENT_DIR, dateiname)
+            if os.path.isfile(pfad):
+                zf.write(pfad, arcname=dateiname)
+    buffer.seek(0)
+
+    return Response(
+        buffer.read(),
+        mimetype="application/zip",
+        headers={"Content-Disposition": 'attachment; filename="filmlog-exif-writer.zip"'},
+    )
 
 @app.route("/api/films/<int:nummer>/export", methods=["GET"])
 def export_film(nummer):
@@ -471,8 +488,6 @@ def export_film(nummer):
         details = []
         if a.get("objektiv"):
             details.append(f"Objektiv: {a['objektiv']}")
-        if a.get("brennweite"):
-            details.append(f"Brennweite: {a['brennweite']}")
         if a.get("belichtungszeit"):
             details.append(f"Belichtungszeit: {a['belichtungszeit']}")
         if a.get("blende"):

@@ -66,7 +66,6 @@
     filme: "Filme",
     kameras: "Kameras",
     objektive: "Objektive",
-    brennweiten: "Brennweiten",
     belichtungszeiten: "Belichtungszeiten",
     blenden: "Blenden",
   };
@@ -340,7 +339,6 @@
     const gpsStatus = document.getElementById("gpsStatus");
     const ortText = document.getElementById("ortText");
     const objektivSelect = document.getElementById("objektivSelect");
-    const brennweiteSelect = document.getElementById("brennweiteSelect");
     const belichtungszeitSelect = document.getElementById("belichtungszeitSelect");
     const blendeSelect = document.getElementById("blendeSelect");
     result.hidden = true;
@@ -350,6 +348,10 @@
     document.getElementById("jetztBtn").onclick = () => {
       form.datum.value = todayStr();
       form.uhrzeit.value = nowTimeStr();
+    };
+    document.getElementById("motivLoeschenBtn").onclick = () => {
+      form.motiv.value = "";
+      form.motiv.focus();
     };
     document.getElementById("anzahlMinus").onclick = () => {
       const input = document.getElementById("anzahlInput");
@@ -380,14 +382,13 @@
       vorausgewaehlterFilm = null;
     }
 
-    let optionen = { objektive: [], brennweiten: [], belichtungszeiten: [], blenden: [] };
+    let optionen = { objektive: [], belichtungszeiten: [], blenden: [] };
     try {
       optionen = await api("/api/optionen");
     } catch (err) {
       showError(form, "Auswahllisten konnten nicht geladen werden.");
     }
     fillSelectOptional(objektivSelect, optionen.objektive);
-    fillSelectOptional(brennweiteSelect, optionen.brennweiten);
     fillSelectOptional(belichtungszeitSelect, optionen.belichtungszeiten);
     fillSelectOptional(blendeSelect, optionen.blenden);
 
@@ -396,7 +397,6 @@
       try {
         const letzte = await api(`/api/einstellungen/letzte?film_nummer=${filmNummer}`);
         fillSelectOptional(objektivSelect, optionen.objektive, letzte.objektiv);
-        fillSelectOptional(brennweiteSelect, optionen.brennweiten, letzte.brennweite);
         fillSelectOptional(belichtungszeitSelect, optionen.belichtungszeiten, letzte.belichtungszeit);
         fillSelectOptional(blendeSelect, optionen.blenden, letzte.blende);
         form.motiv.value = letzte.motiv || "";
@@ -660,7 +660,7 @@
   ${escapeHtml(a.datum || "")} ${escapeHtml(a.uhrzeit || "")}
           </div>
           <div class="frame-meta">
-  ${a.objektiv ? escapeHtml(a.objektiv) : ""} · ${a.objektiv ? escapeHtml(a.brennweite) : ""}
+  ${a.objektiv ? escapeHtml(a.objektiv) : ""}
           </div>
           <div class="frame-meta">
   ${a.belichtungszeit ? escapeHtml(a.belichtungszeit) + " " : ""}
