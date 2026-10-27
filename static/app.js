@@ -2,6 +2,7 @@
   const views = document.querySelectorAll(".view");
   const backBtn = document.getElementById("backBtn");
   let vorausgewaehlterFilm = null;
+  let statsZeitraum = "30";   // gewaehlter Stats-Zeitraum, bleibt beim Wechsel der Ansicht erhalten
 
   const VALID_VIEWS = Array.from(views).map(v => v.dataset.view);
 
@@ -36,6 +37,7 @@
     if (name === "zuletzt") initZuletzt();
     if (name === "downloads") initDownloads();
     if (name === "auswahllisten") initAuswahllisten();
+    if (name === "stats") initStats();
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
   }
 
@@ -592,6 +594,59 @@
     }
 
     await ladeZuletztListe(true);
+  }
+
+  // ---------- Stats: Aufnahmen pro Filmtyp und Kamera ----------
+  async function initStats() {
+    const container = document.getElementById("statsInhalt");
+    const tabs = document.querySelectorAll(".stats-tab");
+    const markiereTab = key => tabs.forEach(btn => btn.classList.toggle("aktiv", btn.dataset.zeitraum === key));
+
+    markiereTab(statsZeitraum);
+    container.innerHTML = `<p class="empty-state">Wird geladen …</p>`;
+
+    let daten;
+    try {
+      daten = await api("/api/stats");
+    } catch (err) {
+      container.innerHTML = `<p class="error-msg">${escapeHtml(err.message)}</p>`;
+      return;
+    }
+
+    // Eine Rangliste; der Balken richtet sich nach dem Spitzenreiter (die Liste kommt absteigend sortiert).
+    function rangliste(titel, eintraege) {
+      if (!eintraege.length) return "";
+      const max = eintraege[0].anzahl;
+      const zeilen = eintraege.map(e => `
+        <div class="stats-zeile">
+          <div class="stats-kopf">
+            <span class="stats-name">${escapeHtml(e.name)}</span>
+            <span class="stats-anzahl">${e.anzahl}</span>
+          </div>
+          <div class="dashboard-fill-track"><div class="dashboard-fill-bar" style="width:${Math.max(3, Math.round(e.anzahl / max * 100))}%"></div></div>
+        </div>`).join("");
+      return `<p class="dashboard-label">${titel}</p><div class="stats-karte">${zeilen}</div>`;
+    }
+
+    function render() {
+      const z = daten.zeitraeume.find(x => x.key === statsZeitraum) || daten.zeitraeume[0];
+      markiereTab(z.key);
+      container.innerHTML = z.gesamt
+        ? `<p class="stats-gesamt"><span>${z.gesamt}</span> ${z.gesamt === 1 ? "Aufnahme" : "Aufnahmen"}</p>`
+          + rangliste("Filmtyp", z.filmtypen)
+          + rangliste("Kamera", z.kameras)
+          + rangliste("Filmstock", z.filmstocks || [])
+        : `<p class="empty-state">Keine Aufnahmen in diesem Zeitraum.</p>`;
+    }
+
+    // Umschalten rechnet nur neu aus den schon geladenen Daten, ohne neue Anfrage
+    tabs.forEach(btn => {
+      btn.onclick = () => {
+        statsZeitraum = btn.dataset.zeitraum;
+        render();
+      };
+    });
+    render();
   }
 
   // ---------- Downloads ----------

@@ -1043,3 +1043,67 @@ button, .anzahl-btn, .add-btn {
 }
 .mehr-anzeigen-btn:hover:not(:disabled) { color: var(--amber); border-color: var(--amber); }
 .mehr-anzeigen-btn:disabled { opacity: 0.5; cursor: default; }
+
+/* ---- Stats ---- */
+.stats-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 4px 0 18px;
+}
+.stats-tab {
+  flex: 1;
+  padding: 9px 6px 6px;
+  background: none;
+  border: 1px solid rgba(242, 234, 217, 0.4);
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--medium);
+  text-transform: uppercase;
+  color: var(--paper-dim);
+  cursor: pointer;
+}
+.stats-tab:hover { color: var(--amber); border-color: var(--amber); }
+.stats-tab.aktiv { background: var(--amber); border-color: var(--amber); color: var(--paper); }
+.stats-tab.aktiv:hover { color: var(--paper); }
+
+.stats-gesamt {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--large);
+  text-transform: uppercase;
+  color: var(--paper);
+}
+.stats-gesamt span { font-size: 34px; color: var(--amber); margin-right: 4px; }
+
+.stats-karte {
+  background: var(--paper);
+  border-radius: 3px;
+  padding: 4px 16px;
+}
+.stats-zeile { padding: 11px 0 12px; }
+.stats-zeile + .stats-zeile { border-top: 1px solid var(--paper-dim); }
+.stats-kopf {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.stats-name {
+  min-width: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--large);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.stats-anzahl {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--red);
+}

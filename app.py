@@ -3,7 +3,8 @@ import re
 import threading
 import io
 import zipfile
-from datetime import datetime
+from collections import Counter
+from datetime import date, datetime, timedelta
 
 import yaml
 from flask import Flask, Response, jsonify, request, send_from_directory
@@ -492,6 +493,52 @@ def delete_option(kategorie):
         liste = sortiere_optionen(kategorie, optionen[kategorie])
 
     return jsonify(liste)
+
+
+# Zeitraeume der Statistik: (Schluessel, Beschriftung, Tage inkl. heute; None = alles)
+STATS_ZEITRAEUME = (("30", "30 Tage", 30), ("365", "365 Tage", 365), ("alle", "Alles", None))
+FILMTYP_LABELS = {"sw": "S/W", "farbe": "Farbe", "anderes": "Anderes"}
+
+
+def _absteigend(zaehler):
+    """Counter -> Liste {name, anzahl}, meiste zuerst; bei Gleichstand alphabetisch."""
+    sortiert = sorted(zaehler.items(), key=lambda kv: (-kv[1], kv[0].casefold()))
+    return [{"name": name, "anzahl": anzahl} for name, anzahl in sortiert]
+
+
+@app.route("/api/stats", methods=["GET"])
+def stats():
+    """Anzahl der Aufnahmen pro Filmtyp, Kamera und Filmstock (= Filmname) fuer 30 Tage, 365 Tage und alles.
+    Gezaehlt wird nach Aufnahmedatum ('datum', ersatzweise Tag von 'aufgenommen_am');
+    'letzte 30 Tage' = heute und die 29 Tage davor."""
+    with _lock:
+        db = load_db()
+
+    heute = date.today()
+    zeitraeume = []
+    for key, label, tage in STATS_ZEITRAEUME:
+        grenze = (heute - timedelta(days=tage - 1)).isoformat() if tage else None
+        pro_typ, pro_kamera, pro_film = Counter(), Counter(), Counter()
+        for film in db["films"].values():
+            typ = FILMTYP_LABELS.get(film.get("filmtyp"), "Ohne Angabe")
+            kamera = film.get("kamera") or "Unbekannt"
+            filmstock = film.get("name") or "Unbekannt"
+            for a in film.get("aufnahmen", []):
+                tag = a.get("datum") or (a.get("aufgenommen_am") or "")[:10]
+                if grenze and tag < grenze:
+                    continue
+                pro_typ[typ] += 1
+                pro_kamera[kamera] += 1
+                pro_film[filmstock] += 1
+        zeitraeume.append({
+            "key": key,
+            "label": label,
+            "gesamt": sum(pro_typ.values()),
+            "filmtypen": _absteigend(pro_typ),
+            "kameras": _absteigend(pro_kamera),
+            "filmstocks": _absteigend(pro_film),
+        })
+    return jsonify({"zeitraeume": zeitraeume})
 
 
 @app.route("/api/einstellungen/letzte", methods=["GET"])

@@ -46,6 +46,11 @@
         <span class="tile-title">Fertig</span>
         <span class="tile-desc">Film abschließen</span>
       </button>
+      <button class="tile" data-nav="stats">
+        <span class="tile-glyph">📊</span>
+        <span class="tile-title">Stats</span>
+        <span class="tile-desc">Aufnahmen pro Filmtyp und Kamera</span>
+      </button>
       <button class="tile" data-nav="auswahllisten">
         <span class="tile-glyph">⚙️</span>
         <span class="tile-title">Optionen</span>
@@ -213,6 +218,18 @@
     <h1 class="view-title" id="filmDetailTitel"></h1>
     <p class="view-hint" id="filmDetailInfo"></p>
     <div id="filmDetailListe" class="eintraege-liste"></div>
+  </section>
+
+  <!-- STATS -->
+  <section class="view" id="view-stats" data-view="stats" hidden>
+    <h1 class="view-title">Stats</h1>
+    <p class="view-hint">Aufnahmen pro Filmtyp und Kamera.</p>
+    <div class="stats-tabs">
+      <button type="button" class="stats-tab" data-zeitraum="30">30 Tage</button>
+      <button type="button" class="stats-tab" data-zeitraum="365">365 Tage</button>
+      <button type="button" class="stats-tab" data-zeitraum="alle">Alles</button>
+    </div>
+    <div id="statsInhalt"></div>
   </section>
 
   <!-- AUSWAHLLISTEN -->
