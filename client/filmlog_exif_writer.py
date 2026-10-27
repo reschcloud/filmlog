@@ -21,10 +21,12 @@ Ablauf:
 """
 
 import json
+import os
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from datetime import datetime
 from pathlib import Path
 
@@ -51,7 +53,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 EXIFTOOL_PATH = "exiftool"
 
 # Bild-Dateiendungen, die beruecksichtigt werden.
-IMAGE_EXTENSIONS = {".tif", ".tiff", ".jpg", ".jpeg", ".png"}
+IMAGE_EXTENSIONS = {".tif", ".tiff", ".jpg", ".jpeg", ".png", ".dng", ".arw"}
 
 CONFIG_PATH = Path(__file__).resolve().parent / "filmlog-exif-writer.config.json"
 
@@ -113,6 +115,34 @@ def api_post(base_url, pfad):
         return None
 
 
+def exiftool_schreiben(exiftool_pfad, exif_args, zieldatei):
+    """
+    Fuehrt ExifTool ueber eine UTF-8-codierte Argumentdatei (-@) aus statt
+    die Argumente direkt auf der Kommandozeile zu uebergeben. Das umgeht
+    ein bekanntes Windows-Problem: Python liefert Kommandozeilen-Argumente
+    sonst in der System-Codepage (z. B. cp1252) aus, ExifTool erwartet bei
+    Unicode-Zeichen (Umlaute im Motiv etc.) aber UTF-8 - Argumentdateien
+    werden von ExifTool dagegen zuverlaessig als UTF-8 gelesen.
+    """
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".args", delete=False, encoding="utf-8"
+    ) as argfile:
+        for arg in exif_args:
+            argfile.write(arg + "\n")
+        argfile.write(str(zieldatei) + "\n")
+        argfile_pfad = argfile.name
+
+    try:
+        return subprocess.run(
+            [exiftool_pfad, "-@", argfile_pfad],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+    finally:
+        os.unlink(argfile_pfad)
+
+
 # ---------- Hilfsfunktionen: Wertumwandlung fuer ExifTool ----------
 
 def zu_brennweite(wert):
@@ -140,6 +170,51 @@ def zu_exif_datum(datum, uhrzeit):
         except ValueError:
             continue
     return None
+
+
+def exif_args_fuer_aufnahme(film, a):
+    """
+    Baut die ExifTool-Argumente fuer eine Aufnahme.
+
+    Jedes Feld, das Filmlog kennt, wird gesetzt, wenn Filmlog einen Wert
+    hat - und GELEERT ("-TAG="), wenn Filmlog keinen hat. ExifTool ignoriert
+    das Leeren stillschweigend, falls der Tag in der Datei gar nicht
+    existiert; man muss die Datei also nicht vorher auslesen. Alle Tags, die
+    Filmlog nicht verwaltet (Scanner-Software, Aufloesung etc.), bleiben
+    unangetastet.
+    """
+    args = ["-overwrite_original", "-m"]
+
+    def setzen(tags, wert):
+        for tag in tags:
+            args.append(f"-{tag}={wert}" if wert else f"-{tag}=")
+
+    setzen(["Make"], film.get("kamera"))
+    setzen(["Model"], film.get("name"))
+    setzen(["LensModel"], a.get("objektiv"))
+    setzen(["ImageDescription", "XPTitle"], a.get("motiv"))
+    setzen(["ExposureTime"], a.get("belichtungszeit"))
+    setzen(["FNumber"], zu_blende(a.get("blende")))
+    setzen(["Flash"], "Fired" if a.get("blitz") else None)
+    setzen(["DateTimeOriginal", "CreateDate"], zu_exif_datum(a.get("datum"), a.get("uhrzeit")))
+
+    if a.get("ort_lat") is not None and a.get("ort_lon") is not None:
+        lat = float(a["ort_lat"])
+        lon = float(a["ort_lon"])
+        args.append(f"-GPSLatitude={abs(lat)}")
+        args.append(f"-GPSLatitudeRef={'N' if lat >= 0 else 'S'}")
+        args.append(f"-GPSLongitude={abs(lon)}")
+        args.append(f"-GPSLongitudeRef={'E' if lon >= 0 else 'W'}")
+    else:
+        setzen(["GPSLatitude", "GPSLatitudeRef", "GPSLongitude", "GPSLongitudeRef"], None)
+
+    # Brennweite erfasst Filmlog nicht mehr: bei alten Eintraegen mit Wert
+    # weiterhin schreiben, aber bewusst NIE leeren (kein Filmlog-Feld mehr).
+    brennweite = zu_brennweite(a.get("brennweite"))
+    if brennweite:
+        args.append(f"-FocalLength={brennweite}")
+
+    return args
 
 
 # ---------- Ablauf ----------
@@ -263,6 +338,11 @@ def main():
     if len(aufnahmen) > anzahl_paare:
         print(f"\n  ({len(aufnahmen) - anzahl_paare} weitere Filmlog-Eintraege ohne Bilddatei werden ignoriert)")
 
+    print(
+        "\nHinweis: Felder, die in Filmlog fuer eine Aufnahme leer sind (Objektiv, Motiv, "
+        "Belichtungszeit, Blende, Blitz, Datum/Uhrzeit, GPS), werden in der Bilddatei "
+        "geleert, falls dort schon ein Wert steht. Alle anderen Metadaten bleiben unveraendert."
+    )
     bestaetigung = input("\nMetadaten jetzt schreiben? (j/n): ").strip().lower()
     if bestaetigung != "j":
         print("Abgebrochen, es wurde nichts geschrieben.")
@@ -277,51 +357,8 @@ def main():
         datei = dateien_ab_start[i]
         a = aufnahmen[i]
 
-        exif_args = ["-overwrite_original"]
-        if gewaehlter_film.get("kamera"):
-            exif_args.append(f"-Make={gewaehlter_film['kamera']}")
-        if gewaehlter_film.get("name"):
-            exif_args.append(f"-Model={gewaehlter_film['name']}")
-        if a.get("objektiv"):
-            exif_args.append(f"-LensModel={a['objektiv']}")
-        if a.get("motiv"):
-            exif_args.append(f"-ImageDescription={a['motiv']}")
-            exif_args.append(f"-XPTitle={a['motiv']}")
-
-        brennweite = zu_brennweite(a.get("brennweite"))
-        if brennweite:
-            exif_args.append(f"-FocalLength={brennweite}")
-
-        if a.get("belichtungszeit"):
-            exif_args.append(f"-ExposureTime={a['belichtungszeit']}")
-
-        blende = zu_blende(a.get("blende"))
-        if blende:
-            exif_args.append(f"-FNumber={blende}")
-
-        if a.get("blitz"):
-            exif_args.append("-Flash=Fired")
-
-        exif_datum = zu_exif_datum(a.get("datum"), a.get("uhrzeit"))
-        if exif_datum:
-            exif_args.append(f"-DateTimeOriginal={exif_datum}")
-            exif_args.append(f"-CreateDate={exif_datum}")
-
-        if a.get("ort_lat") is not None and a.get("ort_lon") is not None:
-            lat = float(a["ort_lat"])
-            lon = float(a["ort_lon"])
-            exif_args.append(f"-GPSLatitude={abs(lat)}")
-            exif_args.append(f"-GPSLatitudeRef={'N' if lat >= 0 else 'S'}")
-            exif_args.append(f"-GPSLongitude={abs(lon)}")
-            exif_args.append(f"-GPSLongitudeRef={'E' if lon >= 0 else 'W'}")
-
-        exif_args.append(str(datei))
-
-        ergebnis = subprocess.run(
-            [exiftool_pfad, *exif_args],
-            capture_output=True,
-            text=True,
-        )
+        exif_args = exif_args_fuer_aufnahme(gewaehlter_film, a)
+        ergebnis = exiftool_schreiben(exiftool_pfad, exif_args, datei)
 
         if ergebnis.returncode == 0:
             erfolge += 1
@@ -354,18 +391,13 @@ def main():
             rest_erfolge = 0
             rest_fehler = 0
             for datei in unverpaarte_dateien:
-                exif_args = ["-overwrite_original"]
+                exif_args = ["-overwrite_original", "-m"]
                 if gewaehlter_film.get("kamera"):
                     exif_args.append(f"-Make={gewaehlter_film['kamera']}")
                 if gewaehlter_film.get("name"):
                     exif_args.append(f"-Model={gewaehlter_film['name']}")
-                exif_args.append(str(datei))
 
-                ergebnis = subprocess.run(
-                    [exiftool_pfad, *exif_args],
-                    capture_output=True,
-                    text=True,
-                )
+                ergebnis = exiftool_schreiben(exiftool_pfad, exif_args, datei)
 
                 if ergebnis.returncode == 0:
                     rest_erfolge += 1
