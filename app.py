@@ -500,29 +500,50 @@ STATS_ZEITRAEUME = (("30", "30 Tage", 30), ("365", "365 Tage", 365), ("alle", "A
 FILMTYP_LABELS = {"sw": "S/W", "farbe": "Farbe", "anderes": "Anderes"}
 
 
-def _absteigend(zaehler):
-    """Counter -> Liste {name, anzahl}, meiste zuerst; bei Gleichstand alphabetisch."""
+def _absteigend(zaehler, filmtyp_von=None):
+    """Counter -> Liste {name, anzahl}, meiste zuerst; bei Gleichstand alphabetisch.
+    Mit filmtyp_von ({name: filmtyp}) bekommt jeder Eintrag zusaetzlich seinen Filmtyp."""
     sortiert = sorted(zaehler.items(), key=lambda kv: (-kv[1], kv[0].casefold()))
-    return [{"name": name, "anzahl": anzahl} for name, anzahl in sortiert]
+    liste = [{"name": name, "anzahl": anzahl} for name, anzahl in sortiert]
+    if filmtyp_von is not None:
+        for eintrag in liste:
+            eintrag["filmtyp"] = filmtyp_von.get(eintrag["name"])
+    return liste
+
+
+def _filmtyp_je_filmstock(filme):
+    """Filmtyp je Filmstock (= Filmname): der am haeufigsten vergebene bekannte Typ ueber alle Filme
+    dieses Namens (bei Gleichstand alphabetisch nach Typ). Filme ohne Typ zaehlen nicht mit."""
+    zaehler = {}
+    for film in filme:
+        if film.get("filmtyp") in FILMTYP_LABELS:
+            zaehler.setdefault(film.get("name") or "Unbekannt", Counter())[film["filmtyp"]] += 1
+    return {name: sorted(c.items(), key=lambda kv: (-kv[1], kv[0]))[0][0] for name, c in zaehler.items()}
 
 
 @app.route("/api/stats", methods=["GET"])
 def stats():
-    """Anzahl der Aufnahmen pro Filmtyp, Kamera und Filmstock (= Filmname) fuer 30 Tage, 365 Tage und alles.
+    """Anzahl der Aufnahmen pro Filmtyp, Kamera und Filmstock (= Filmname) fuer 30 Tage, 365 Tage und alles,
+    dazu die Rollen pro Filmstock sowie die Gesamtzahl der Rollen. Fuer Rollen zaehlt nur das Anlegedatum des
+    Films ('angelegt_am'), nicht die Aufnahmen: ein Film zaehlt im Zeitraum, in dem er angelegt wurde.
     Gezaehlt wird nach Aufnahmedatum ('datum', ersatzweise Tag von 'aufgenommen_am');
     'letzte 30 Tage' = heute und die 29 Tage davor."""
     with _lock:
         db = load_db()
 
     heute = date.today()
+    filmstock_typ = _filmtyp_je_filmstock(db["films"].values())
     zeitraeume = []
     for key, label, tage in STATS_ZEITRAEUME:
         grenze = (heute - timedelta(days=tage - 1)).isoformat() if tage else None
-        pro_typ, pro_kamera, pro_film = Counter(), Counter(), Counter()
+        pro_typ, pro_kamera, pro_film, rollen_film = Counter(), Counter(), Counter(), Counter()
         for film in db["films"].values():
             typ = FILMTYP_LABELS.get(film.get("filmtyp"), "Ohne Angabe")
             kamera = film.get("kamera") or "Unbekannt"
             filmstock = film.get("name") or "Unbekannt"
+            angelegt = (film.get("angelegt_am") or "")[:10]
+            if not grenze or angelegt >= grenze:
+                rollen_film[filmstock] += 1
             for a in film.get("aufnahmen", []):
                 tag = a.get("datum") or (a.get("aufgenommen_am") or "")[:10]
                 if grenze and tag < grenze:
@@ -534,9 +555,11 @@ def stats():
             "key": key,
             "label": label,
             "gesamt": sum(pro_typ.values()),
+            "gesamt_rollen": sum(rollen_film.values()),
             "filmtypen": _absteigend(pro_typ),
             "kameras": _absteigend(pro_kamera),
-            "filmstocks": _absteigend(pro_film),
+            "filmstocks": _absteigend(pro_film, filmstock_typ),
+            "rollen_filmstocks": _absteigend(rollen_film, filmstock_typ),
         })
     return jsonify({"zeitraeume": zeitraeume})
 

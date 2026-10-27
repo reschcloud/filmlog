@@ -216,9 +216,11 @@
               <div class="dashboard-info">
                 <div class="dashboard-kamera">${escapeHtml(f.kamera)}</div>
                 <div class="dashboard-film">${escapeHtml(f.name)} #${f.nummer} ${ablaufPille}</div>
+              </div>
+              <div class="dashboard-right">
+                <div class="dashboard-count">${f.anzahl_aufnahmen}${f.kapazitaet ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
                 ${balken}
               </div>
-              <div class="dashboard-count">${f.anzahl_aufnahmen}${f.kapazitaet ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
             </div>
           `;
         }).join("")}</div>`
@@ -613,17 +615,18 @@
       return;
     }
 
-    // Eine Rangliste; der Balken richtet sich nach dem Spitzenreiter (die Liste kommt absteigend sortiert).
+    // Eine Rangliste (die Liste kommt vom Server bereits absteigend sortiert).
     function rangliste(titel, eintraege) {
       if (!eintraege.length) return "";
-      const max = eintraege[0].anzahl;
+      // Eintraege mit Filmtyp (nur die Filmstock-Listen) bekommen die Typ-Ecke wie auf den anderen Karten
+      const eckeKlasse = e => e.filmtyp === "sw" ? "dashboard-typ-sw" : e.filmtyp === "farbe" ? "dashboard-typ-farbe" : "";
       const zeilen = eintraege.map(e => `
         <div class="stats-zeile">
+          ${eckeKlasse(e) ? `<div class="dashboard-typ-ecke ${eckeKlasse(e)}"></div>` : ""}
           <div class="stats-kopf">
             <span class="stats-name">${escapeHtml(e.name)}</span>
             <span class="stats-anzahl">${e.anzahl}</span>
           </div>
-          <div class="dashboard-fill-track"><div class="dashboard-fill-bar" style="width:${Math.max(3, Math.round(e.anzahl / max * 100))}%"></div></div>
         </div>`).join("");
       return `<p class="dashboard-label">${titel}</p><div class="stats-karte">${zeilen}</div>`;
     }
@@ -631,11 +634,16 @@
     function render() {
       const z = daten.zeitraeume.find(x => x.key === statsZeitraum) || daten.zeitraeume[0];
       markiereTab(z.key);
-      container.innerHTML = z.gesamt
-        ? `<p class="stats-gesamt"><span>${z.gesamt}</span> ${z.gesamt === 1 ? "Aufnahme" : "Aufnahmen"}</p>`
+      // Summe der Rollen steht hinter der Summe der Aufnahmen (fehlt sie in der Antwort, bleibt es bei den Aufnahmen)
+      const rollenText = z.gesamt_rollen != null
+        ? ` · <span>${z.gesamt_rollen}</span> ${z.gesamt_rollen === 1 ? "Rolle" : "Rollen"}`
+        : "";
+      container.innerHTML = (z.gesamt || z.gesamt_rollen)
+        ? `<p class="stats-gesamt"><span>${z.gesamt}</span> ${z.gesamt === 1 ? "Aufnahme" : "Aufnahmen"}${rollenText}</p>`
           + rangliste("Filmtyp", z.filmtypen)
           + rangliste("Kamera", z.kameras)
           + rangliste("Filmstock", z.filmstocks || [])
+          + rangliste("Rollen pro Filmstock", z.rollen_filmstocks || [])
         : `<p class="empty-state">Keine Aufnahmen in diesem Zeitraum.</p>`;
     }
 

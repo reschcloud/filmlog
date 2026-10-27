@@ -749,8 +749,14 @@ button, .anzahl-btn, .add-btn {
   height: 26px;
   clip-path: polygon(0 0, 100% 0, 0 100%);
 }
+/* S/W: schwarz-weisse Streifen in derselben Richtung wie beim Farbsymbol (5 Baender, aussen schwarz) */
 .dashboard-typ-ecke.dashboard-typ-sw {
-  background: #1a1a1a;
+  background: linear-gradient(135deg,
+    #1a1a1a 0%, #1a1a1a 10%,
+    #ffffff 10%, #ffffff 20%,
+    #1a1a1a 20%, #1a1a1a 30%,
+    #ffffff 30%, #ffffff 40%,
+    #1a1a1a 40%, #1a1a1a 50%);
 }
 .dashboard-typ-ecke.dashboard-typ-farbe {
   background: linear-gradient(135deg, #e63946, #f9e14c, #2a9d8f, #457b9d, #7b4fa3);
@@ -798,8 +804,19 @@ button, .anzahl-btn, .add-btn {
   font-size: 26px;
   color: var(--red);
   flex-shrink: 0;
-  text-align: right;
-  min-width: 4.5ch;
+  text-align: center;
+}
+/* rechte Spalte: Zahl zentriert, darunter der kurze Balken; feste Breite = alle Balken gleich lang */
+.dashboard-right {
+  flex-shrink: 0;
+  width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.dashboard-right .dashboard-fill-track {
+  width: 100%;
+  margin-top: 4px;
 }
 .ablauf-pille {
   display: inline-block;
@@ -1080,9 +1097,17 @@ button, .anzahl-btn, .add-btn {
 .stats-karte {
   background: var(--paper);
   border-radius: 3px;
-  padding: 4px 16px;
+  overflow: hidden;
 }
-.stats-zeile { padding: 11px 0 12px; }
+.stats-zeile {
+  position: relative;
+  padding: 10px 16px 7px;
+}
+/* Typ-Ecke in den flacheren Zeilen kleiner, damit sie im gleichen Verhaeltnis zur Zeile bleibt und den Namen nicht beruehrt */
+.stats-zeile .dashboard-typ-ecke {
+  width: 20px;
+  height: 20px;
+}
 .stats-zeile + .stats-zeile { border-top: 1px solid var(--paper-dim); }
 .stats-kopf {
   display: flex;
@@ -1094,7 +1119,7 @@ button, .anzahl-btn, .add-btn {
   min-width: 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--large);
+  font-size: var(--medium);
   letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--ink);
@@ -1104,6 +1129,6 @@ button, .anzahl-btn, .add-btn {
   flex-shrink: 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 26px;
+  font-size: var(--medium);
   color: var(--red);
 }
