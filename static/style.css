@@ -806,18 +806,8 @@ button, .anzahl-btn, .add-btn {
   font-size: 26px;
   color: var(--red);
   flex-shrink: 0;
-  text-align: center;
-}
-.dashboard-right {
-  flex-shrink: 0;
-  width: 72px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.dashboard-right .dashboard-fill-track {
-  width: 100%;
-  margin-top: 4px;
+  text-align: right;
+  min-width: 4.5ch;
 }
 .ablauf-pille {
   display: inline-block;
@@ -878,3 +868,152 @@ button, .anzahl-btn, .add-btn {
 @media (prefers-reduced-motion: reduce) {
   .frisch-punkt { animation: none; }
 }
+
+/* ---- Protokolle: Karte antippbar + Stift-Button ---- */
+.download-row-klickbar { cursor: pointer; }
+.download-row-klickbar:hover { background: var(--paper-dim); }
+
+.edit-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+.edit-icon-btn:hover { background: var(--paper-dim); }
+
+/* ---- Film-Detail: Aufnahmen ansehen, bearbeiten, einfügen, löschen ---- */
+.detail-zurueck {
+  background: none;
+  border: none;
+  padding: 4px 0;
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--medium);
+  text-transform: uppercase;
+  color: var(--paper-dim);
+  cursor: pointer;
+}
+.detail-zurueck:hover { color: var(--amber); }
+
+.eintraege-liste {
+  display: flex;
+  flex-direction: column;
+}
+
+.eintrag {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--paper);
+  border-radius: 3px;
+  padding: 12px 14px;
+}
+.eintrag-nr {
+  flex-shrink: 0;
+  min-width: 2ch;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--amber);
+}
+.eintrag-info {
+  flex: 1;
+  min-width: 0;
+}
+.eintrag-motiv {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--large);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.eintrag-meta {
+  font-family: var(--font-serif);
+  font-size: var(--medium);
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+.eintrag-aktionen {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.eintrag-edit-btn, .eintrag-del-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+.eintrag-edit-btn:hover, .eintrag-del-btn:hover { background: var(--paper-dim); }
+
+/* Einfüge-Streifen zwischen den Aufnahmen */
+.eintrag-plus {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 30px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--large);
+  line-height: 1;
+  color: var(--muted);
+  opacity: 0.75;
+  cursor: pointer;
+}
+.eintrag-plus::before, .eintrag-plus::after {
+  content: "";
+  flex: 1;
+  border-top: 1px dashed rgba(242, 234, 217, 0.35);
+}
+.eintrag-plus:hover { color: var(--amber); opacity: 1; }
+
+/* Inline-Formular (Bearbeiten/Einfügen) nutzt das Karten-Layout, aber ohne roten Rand/Schatten */
+.eintrag-form {
+  box-shadow: none;
+  border-top: none;
+  padding: 14px 16px;
+  gap: 12px;
+}
+.eintrag-form-titel {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--large);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.eintrag-form-aktionen {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.eintrag-abbrechen-btn {
+  background: none;
+  border: none;
+  padding: 8px 4px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--medium);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.eintrag-abbrechen-btn:hover { color: var(--red); }

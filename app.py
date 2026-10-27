@@ -273,6 +273,30 @@ def delete_film(nummer):
         save_db(db)
     return jsonify({"geloescht": nummer})
 
+# Felder einer Aufnahme, die in der Detailansicht bearbeitet werden duerfen.
+# Koordinaten (ort_lat/ort_lon) und der Zeitstempel gehoeren bewusst nicht dazu.
+BEARBEITBARE_FELDER = (
+    "datum", "uhrzeit", "ort_text", "objektiv",
+    "belichtungszeit", "blende", "blitz", "motiv",
+)
+
+
+def _eintrag_aus_payload(payload):
+    """Bereinigt die Felder einer Aufnahme (trimmen, leer wird None)."""
+    return {
+        "datum": (payload.get("datum") or "").strip(),
+        "uhrzeit": (payload.get("uhrzeit") or "").strip(),
+        "ort_text": (payload.get("ort_text") or "").strip() or None,
+        "ort_lat": payload.get("ort_lat"),
+        "ort_lon": payload.get("ort_lon"),
+        "objektiv": (payload.get("objektiv") or "").strip() or None,
+        "belichtungszeit": (payload.get("belichtungszeit") or "").strip() or None,
+        "blende": (payload.get("blende") or "").strip() or None,
+        "blitz": bool(payload.get("blitz")),
+        "motiv": (payload.get("motiv") or "").strip() or None,
+    }
+
+
 @app.route("/api/aufnahmen", methods=["POST"])
 def create_aufnahme():
     payload = request.get_json(force=True) or {}
@@ -289,19 +313,8 @@ def create_aufnahme():
         if film["status"] != "offen":
             return jsonify({"error": "Dieser Film ist bereits abgeschlossen."}), 400
 
-        eintrag = {
-            "datum": (payload.get("datum") or "").strip(),
-            "uhrzeit": (payload.get("uhrzeit") or "").strip(),
-            "ort_text": (payload.get("ort_text") or "").strip() or None,
-            "ort_lat": payload.get("ort_lat"),
-            "ort_lon": payload.get("ort_lon"),
-            "objektiv": (payload.get("objektiv") or "").strip() or None,
-            "belichtungszeit": (payload.get("belichtungszeit") or "").strip() or None,
-            "blende": (payload.get("blende") or "").strip() or None,
-            "blitz": bool(payload.get("blitz")),
-            "motiv": (payload.get("motiv") or "").strip() or None,
-            "aufgenommen_am": datetime.now().isoformat(timespec="seconds"),
-        }
+        eintrag = _eintrag_aus_payload(payload)
+        eintrag["aufgenommen_am"] = datetime.now().isoformat(timespec="seconds")
         film.setdefault("aufnahmen", []).append(eintrag)
         save_db(db)
         frame_nr = len(film["aufnahmen"])
@@ -311,6 +324,79 @@ def create_aufnahme():
     result["film_name"] = film["name"]
     result["frame_nr"] = frame_nr
     return jsonify(result), 201
+
+@app.route("/api/films/<int:nummer>/aufnahmen", methods=["POST"])
+def insert_aufnahme(nummer):
+    """Fuegt eine Aufnahme an einer bestimmten Position ein (1 = ganz vorne,
+    n+1 = ans Ende). Funktioniert auch bei abgeschlossenen Filmen, nicht aber
+    bei archivierten."""
+    payload = request.get_json(force=True) or {}
+    try:
+        position = int(payload.get("position"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "Ungültige Position."}), 400
+
+    with _lock:
+        db = load_db()
+        film = db["films"].get(str(nummer))
+        if not film:
+            return jsonify({"error": "Film nicht gefunden."}), 404
+        if film.get("archiviert"):
+            return jsonify({"error": "Archivierte Filme können nicht bearbeitet werden."}), 400
+
+        aufnahmen = film.setdefault("aufnahmen", [])
+        if position < 1 or position > len(aufnahmen) + 1:
+            return jsonify({"error": "Ungültige Position."}), 400
+
+        eintrag = _eintrag_aus_payload(payload)
+        # Koordinaten werden nicht uebernommen, der Eintrag hat nur den Ort-Text.
+        eintrag["ort_lat"] = None
+        eintrag["ort_lon"] = None
+        # Zeitstempel vom Vorgaenger (sonst Nachfolger, sonst Film-Datum), damit
+        # der Eintrag nicht als "gerade aufgenommen" unter "Zuletzt" auftaucht.
+        nachbar = aufnahmen[position - 2] if position > 1 else (aufnahmen[0] if aufnahmen else None)
+        eintrag["aufgenommen_am"] = (
+            (nachbar or {}).get("aufgenommen_am")
+            or film.get("abgeschlossen_am")
+            or film.get("angelegt_am")
+            or datetime.now().isoformat(timespec="seconds")
+        )
+        aufnahmen.insert(position - 1, eintrag)
+        save_db(db)
+
+    result = dict(eintrag)
+    result["film_nummer"] = nummer
+    result["frame_nr"] = position
+    return jsonify(result), 201
+
+
+@app.route("/api/films/<int:nummer>/aufnahmen/<int:index>", methods=["PUT"])
+def update_aufnahme(nummer, index):
+    """Aendert die bearbeitbaren Felder einer Aufnahme. Koordinaten und
+    Zeitstempel bleiben unveraendert."""
+    payload = request.get_json(force=True) or {}
+    with _lock:
+        db = load_db()
+        film = db["films"].get(str(nummer))
+        if not film:
+            return jsonify({"error": "Film nicht gefunden."}), 404
+        if film.get("archiviert"):
+            return jsonify({"error": "Archivierte Filme können nicht bearbeitet werden."}), 400
+        aufnahmen = film.get("aufnahmen", [])
+        if index < 1 or index > len(aufnahmen):
+            return jsonify({"error": "Aufnahme nicht gefunden."}), 404
+
+        neu = _eintrag_aus_payload(payload)
+        eintrag = aufnahmen[index - 1]
+        for feld in BEARBEITBARE_FELDER:
+            eintrag[feld] = neu[feld]
+        save_db(db)
+
+    result = dict(eintrag)
+    result["film_nummer"] = nummer
+    result["frame_nr"] = index
+    return jsonify(result)
+
 
 @app.route("/api/films/<int:nummer>/aufnahmen/<int:index>", methods=["DELETE"])
 def delete_aufnahme(nummer, index):

@@ -5,22 +5,30 @@
 
   const VALID_VIEWS = Array.from(views).map(v => v.dataset.view);
 
-  function navigate(name) {
-    if (location.hash.slice(1) === name) {
-      showView(name);
+  // Ansicht plus optionaler Parameter, z. B. navigate("film-detail", 12) -> #film-detail/12
+  function navigate(name, param) {
+    const ziel = param !== undefined ? `${name}/${param}` : name;
+    if (location.hash.slice(1) === ziel) {
+      showView(name, param);
     } else {
-      location.hash = name;
+      location.hash = ziel;
     }
   }
 
+  function parseHash() {
+    const [name, param] = location.hash.slice(1).split("/");
+    return { name: VALID_VIEWS.includes(name) ? name : "start", param };
+  }
+
   window.addEventListener("hashchange", () => {
-    const name = location.hash.slice(1);
-    showView(VALID_VIEWS.includes(name) ? name : "start");
+    const { name, param } = parseHash();
+    showView(name, param);
   });
 
-  function showView(name) {
+  function showView(name, param) {
     views.forEach(v => v.hidden = v.dataset.view !== name);
     if (backBtn) backBtn.hidden = name === "start";
+    if (name === "film-detail") initFilmDetail(param);
     if (name === "start") initStart();
     if (name === "neuer-film") initNeuerFilm();
     if (name === "neue-aufnahme") initNeueAufnahme();
@@ -222,11 +230,9 @@
               <div class="dashboard-info">
                 <div class="dashboard-kamera">${escapeHtml(f.kamera)}</div>
                 <div class="dashboard-film">${escapeHtml(f.name)} #${f.nummer} ${ablaufPille}</div>
-              </div>
-              <div class="dashboard-right">
-                <div class="dashboard-count">${f.anzahl_aufnahmen}${f.kapazitaet ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
                 ${balken}
               </div>
+              <div class="dashboard-count">${f.anzahl_aufnahmen}${f.kapazitaet ? `<span class="dashboard-max">/${f.kapazitaet}</span>` : ""}</div>
             </div>
           `;
         }).join("")}</div>`
@@ -554,8 +560,9 @@
         const angelegtDatum = (f.angelegt_am || "").slice(0, 10);
         const entwickeltDatum = (f.entwickelt_am || "").slice(0, 10);
         const ablaufPille = `<span class="ablauf-pille">${f.ablaufdatum}</span>`;
+        const bearbeitbar = !f.archiviert;
         return `
-          <div class="download-row">
+          <div class="download-row${bearbeitbar ? " download-row-klickbar" : ""}" data-nummer="${f.nummer}">
             ${eckeKlasse ? `<div class="dashboard-typ-ecke ${eckeKlasse}"></div>` : ""}
             <div class="download-row-info">
               <div class="download-row-title">#${String(f.nummer)} — ${escapeHtml(f.name)}</div>
@@ -564,6 +571,7 @@
               ${f.entwickelt && entwickeltDatum ? `<div class="download-row-meta">Entwickelt: ${entwickeltDatum}</div>` : ""}
             </div>
             <div class="download-row-actions">
+              ${bearbeitbar ? `<button type="button" class="edit-icon-btn" data-nummer="${f.nummer}" title="Aufnahmen ansehen und bearbeiten">✏️</button>` : ""}
               <a class="download-btn" href="/api/films/${f.nummer}/export" download title="Protokoll herunterladen">📥</a>
               ${!f.entwickelt ? `<button type="button" class="entwickeln-btn" data-nummer="${f.nummer}">Entwickelt</button>` : ""}
               ${f.entwickelt ? `<button type="button" class="archivieren-btn" data-nummer="${f.nummer}" data-archiviert="${f.archiviert ? "1" : "0"}">${f.archiviert ? "Dearchivieren" : "Archivieren"}</button>` : ""}
@@ -595,6 +603,17 @@
       }
 
       container.innerHTML = html || `<p class="empty-state">Noch kein Film abgeschlossen.</p>`;
+
+      // Tipp auf die Karte oeffnet die Detailansicht (die Aktions-Buttons behalten ihre eigene Funktion)
+      container.querySelectorAll(".download-row-klickbar").forEach(row => {
+        row.onclick = (e) => {
+          if (e.target.closest(".download-row-actions")) return;
+          navigate("film-detail", row.dataset.nummer);
+        };
+      });
+      container.querySelectorAll(".edit-icon-btn").forEach(btn => {
+        btn.onclick = () => navigate("film-detail", btn.dataset.nummer);
+      });
 
       container.querySelectorAll(".reopen-btn").forEach(btn => {
         btn.onclick = async () => {
@@ -637,6 +656,247 @@
     } catch (err) {
       container.innerHTML = `<p class="error-msg">${escapeHtml(err.message)}</p>`;
     }
+  }
+
+  // ---------- Film-Detail: Aufnahmen ansehen, bearbeiten, einfuegen, loeschen ----------
+  async function initFilmDetail(nummerParam) {
+    const nummer = parseInt(nummerParam, 10);
+    const titel = document.getElementById("filmDetailTitel");
+    const info = document.getElementById("filmDetailInfo");
+    const liste = document.getElementById("filmDetailListe");
+
+    if (!nummer) {
+      location.replace("#downloads");
+      return;
+    }
+
+    liste.innerHTML = `<p class="empty-state">Wird geladen …</p>`;
+    titel.textContent = "";
+    info.textContent = "";
+
+    let film;
+    let optionen;
+    try {
+      [film, optionen] = await Promise.all([api(`/api/films/${nummer}`), api("/api/optionen")]);
+    } catch (err) {
+      liste.innerHTML = `<p class="error-msg">${escapeHtml(err.message)}</p>`;
+      return;
+    }
+    // Archivierte Filme sind nicht bearbeitbar (das Backend lehnt es ebenfalls ab).
+    if (film.archiviert) {
+      location.replace("#downloads");
+      return;
+    }
+
+    const jsonHeader = { "Content-Type": "application/json" };
+    // null | { typ: "edit" | "insert", position }  -> welches Formular gerade offen ist
+    let modus = null;
+
+    function metaText(a) {
+      return [
+        a.objektiv,
+        a.belichtungszeit,
+        a.blende,
+        a.blitz ? "⚡" : "",
+        `${a.datum || ""} ${a.uhrzeit || ""}`.trim(),
+        a.ort_text,
+      ].filter(Boolean).map(escapeHtml).join(" · ");
+    }
+
+    function zeileHtml(a, pos) {
+      return `
+        <div class="eintrag">
+          <div class="eintrag-nr">${pos}</div>
+          <div class="eintrag-info">
+            <div class="eintrag-motiv">${a.motiv ? escapeHtml(a.motiv) : "(kein Motiv)"}</div>
+            <div class="eintrag-meta">${metaText(a)}</div>
+          </div>
+          <div class="eintrag-aktionen">
+            <button type="button" class="eintrag-edit-btn" data-pos="${pos}" title="Bearbeiten">✏️</button>
+            <button type="button" class="eintrag-del-btn" data-pos="${pos}" title="Löschen">🗑️</button>
+          </div>
+        </div>`;
+    }
+
+    function slotHtml(pos) {
+      const text = film.aufnahmen.length === 0 ? "+ Aufnahme hinzufügen" : "+";
+      return `<button type="button" class="eintrag-plus" data-pos="${pos}" title="Hier einfügen">${text}</button>`;
+    }
+
+    function formHtml(typ, pos) {
+      const kopf = typ === "edit" ? `Aufnahme ${pos} bearbeiten` : `Neue Aufnahme als Nr. ${pos}`;
+      return `
+        <form class="card eintrag-form" data-typ="${typ}" data-pos="${pos}">
+          <div class="eintrag-form-titel">${kopf}</div>
+          <label>Motivbeschreibung
+            <textarea name="motiv" rows="2" placeholder="Was ist auf dem Bild zu sehen?"></textarea>
+          </label>
+          <div class="field-row">
+            <label>Objektiv
+              <select name="objektiv"></select>
+            </label>
+            <label class="blitz-feld">
+              <label class="blitz-toggle">
+                <input type="checkbox" name="blitz">
+                Blitz
+              </label>
+            </label>
+          </div>
+          <div class="field-row">
+            <label>Belichtungszeit
+              <select name="belichtungszeit"></select>
+            </label>
+            <label>Blende
+              <select name="blende"></select>
+            </label>
+          </div>
+          <div class="field-row">
+            <label>Datum
+              <input type="date" name="datum" required>
+            </label>
+            <label>Uhrzeit
+              <input type="time" name="uhrzeit" required>
+            </label>
+          </div>
+          <label>Ort
+            <input type="text" name="ort_text" placeholder="Ort (nur Text)">
+          </label>
+          <div class="eintrag-form-aktionen">
+            <button type="submit" class="btn-primary">Speichern</button>
+            <button type="button" class="eintrag-abbrechen-btn">Abbrechen</button>
+          </div>
+        </form>`;
+    }
+
+    // Werte in ein offenes Formular schreiben. Ist ein vorhandener Wert nicht (mehr) in den
+    // Auswahllisten, wird er trotzdem angeboten, damit er beim Speichern nicht verloren geht.
+    function befuelleForm(form, werte) {
+      const el = form.elements;
+      const mitAktuell = (werteListe, aktuell) => {
+        const basis = werteListe || [];
+        return aktuell && !basis.includes(aktuell) ? [...basis, aktuell] : basis;
+      };
+      fillSelectOptional(el.objektiv, mitAktuell(optionen.objektive, werte.objektiv), werte.objektiv);
+      fillSelectOptional(el.belichtungszeit, mitAktuell(optionen.belichtungszeiten, werte.belichtungszeit), werte.belichtungszeit);
+      fillSelectOptional(el.blende, mitAktuell(optionen.blenden, werte.blende), werte.blende);
+      el.motiv.value = werte.motiv || "";
+      el.blitz.checked = !!werte.blitz;
+      el.datum.value = werte.datum || "";
+      el.uhrzeit.value = werte.uhrzeit || "";
+      el.ort_text.value = werte.ort_text || "";
+    }
+
+    // Vorbelegung beim Einfuegen: Einstellungen, Datum und Uhrzeit vom Vorgaenger
+    // (an Position 1 vom Nachfolger), Motiv/Blitz/Ort bleiben leer.
+    function vorlageFuerEinfuegen(pos) {
+      const nachbar = film.aufnahmen[pos - 2] || film.aufnahmen[pos - 1];
+      if (!nachbar) return { datum: todayStr(), uhrzeit: nowTimeStr() };
+      return {
+        objektiv: nachbar.objektiv,
+        belichtungszeit: nachbar.belichtungszeit,
+        blende: nachbar.blende,
+        datum: nachbar.datum,
+        uhrzeit: nachbar.uhrzeit,
+      };
+    }
+
+    async function laden() {
+      film = await api(`/api/films/${nummer}`);
+      render();
+    }
+
+    function bind() {
+      liste.querySelectorAll(".eintrag-plus").forEach(btn => {
+        btn.onclick = () => {
+          modus = { typ: "insert", position: Number(btn.dataset.pos) };
+          render();
+        };
+      });
+      liste.querySelectorAll(".eintrag-edit-btn").forEach(btn => {
+        btn.onclick = () => {
+          modus = { typ: "edit", position: Number(btn.dataset.pos) };
+          render();
+        };
+      });
+      liste.querySelectorAll(".eintrag-del-btn").forEach(btn => {
+        btn.onclick = async () => {
+          const pos = Number(btn.dataset.pos);
+          const bezeichnung = film.aufnahmen[pos - 1].motiv || `Aufnahme ${pos}`;
+          if (!confirm(`„${bezeichnung}" (Nr. ${pos}) wirklich löschen? Die folgenden Aufnahmen rücken nach.`)) return;
+          try {
+            await api(`/api/films/${nummer}/aufnahmen/${pos}`, { method: "DELETE" });
+            modus = null;
+            await laden();
+          } catch (err) {
+            alert(err.message);
+          }
+        };
+      });
+
+      const form = liste.querySelector(".eintrag-form");
+      if (!form) return;
+      const pos = Number(form.dataset.pos);
+      const typ = form.dataset.typ;
+      befuelleForm(form, typ === "edit" ? film.aufnahmen[pos - 1] : vorlageFuerEinfuegen(pos));
+
+      form.querySelector(".eintrag-abbrechen-btn").onclick = () => {
+        modus = null;
+        render();
+      };
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        const el = form.elements;
+        const werte = {
+          motiv: el.motiv.value,
+          objektiv: el.objektiv.value,
+          belichtungszeit: el.belichtungszeit.value,
+          blende: el.blende.value,
+          blitz: el.blitz.checked,
+          datum: el.datum.value,
+          uhrzeit: el.uhrzeit.value,
+          ort_text: el.ort_text.value,
+        };
+        const speichernBtn = form.querySelector('[type="submit"]');
+        speichernBtn.disabled = true; // verhindert doppeltes Absenden bei schnellem Tippen
+        try {
+          if (typ === "edit") {
+            await api(`/api/films/${nummer}/aufnahmen/${pos}`, {
+              method: "PUT", headers: jsonHeader, body: JSON.stringify(werte),
+            });
+          } else {
+            await api(`/api/films/${nummer}/aufnahmen`, {
+              method: "POST", headers: jsonHeader, body: JSON.stringify({ ...werte, position: pos }),
+            });
+          }
+          modus = null;
+          await laden();
+        } catch (err) {
+          alert(err.message);
+          speichernBtn.disabled = false;
+        }
+      };
+      if (form.scrollIntoView) form.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function render() {
+      const anzahl = film.aufnahmen.length;
+      titel.textContent = `#${film.nummer} — ${film.name}`;
+      info.textContent = `${film.kamera} · ${anzahl} Aufnahmen${film.kapazitaet ? ` (von ${film.kapazitaet})` : ""}`;
+
+      let html = "";
+      for (let pos = 1; pos <= anzahl + 1; pos++) {
+        const einfuegenOffen = modus && modus.typ === "insert" && modus.position === pos;
+        html += einfuegenOffen ? formHtml("insert", pos) : slotHtml(pos);
+        if (pos <= anzahl) {
+          const bearbeitenOffen = modus && modus.typ === "edit" && modus.position === pos;
+          html += bearbeitenOffen ? formHtml("edit", pos) : zeileHtml(film.aufnahmen[pos - 1], pos);
+        }
+      }
+      liste.innerHTML = html;
+      bind();
+    }
+
+    render();
   }
 
   function kameraKuerzel(kamera) {
@@ -684,6 +944,6 @@
       .replace(/"/g, "&quot;");
   }
 
-  const initialName = location.hash.slice(1);
-  showView(VALID_VIEWS.includes(initialName) ? initialName : "start");
+  const initial = parseHash();
+  showView(initial.name, initial.param);
 })();
