@@ -412,7 +412,7 @@ body {
 }
 .frame {
   display: grid;
-  grid-template-columns: 64px 1fr;
+  grid-template-columns: 1fr;
   gap: 16px;
   padding: 14px 4px;
   border-bottom: 1px solid rgba(242,234,217,0.1);
@@ -421,14 +421,6 @@ body {
   overflow: hidden;
 }
 
-.frame-nr {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 26px;
-  color: var(--amber);
-  line-height: 3;
-  text-align: center;
-}
 .frame-meta {
   font-size: var(--medium);
   color: var(--paper-dim);
@@ -1024,7 +1016,8 @@ button, .anzahl-btn, .add-btn {
 .eintraege-liste-abstand { gap: 10px; }
 .eintraege-liste-abstand + .dashboard-label { margin-top: 18px; }
 
-.eintrag-nr-kuerzel { min-width: 3.4ch; }
+/* ohne linke Spalte: gleicher Innenabstand wie die anderen Karten mit Filmtyp-Ecke */
+.eintrag-zuletzt { padding: 14px 16px; }
 .eintrag-film {
   font-size: var(--medium);
   font-weight: 700;

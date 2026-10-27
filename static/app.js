@@ -502,9 +502,8 @@
     function karteHtml(a, i) {
       const eckeKlasse = a.film_typ === "sw" ? "dashboard-typ-sw" : a.film_typ === "farbe" ? "dashboard-typ-farbe" : "";
       return `
-        <div class="eintrag">
+        <div class="eintrag eintrag-zuletzt">
           ${eckeKlasse ? `<div class="dashboard-typ-ecke ${eckeKlasse}"></div>` : ""}
-          <div class="eintrag-nr eintrag-nr-kuerzel">${a.film_kamera ? escapeHtml(kameraKuerzel(a.film_kamera)) : String(a.frame_nr)}</div>
           <div class="eintrag-info">
             <div class="eintrag-motiv">${a.motiv ? escapeHtml(a.motiv) : "(kein Motiv)"}</div>
             <div class="eintrag-film">${escapeHtml(a.film_kamera)} · ${escapeHtml(a.film_name)}</div>
@@ -972,22 +971,12 @@
     render();
   }
 
-  function kameraKuerzel(kamera) {
-    if (!kamera) return "";
-    const woerter = kamera.trim().split(/\s+/).filter(Boolean);
-    if (woerter.length >= 2) {
-      return woerter[0].slice(0, 2) + woerter[1].slice(0, 1);
-    }
-    return (woerter[0] || "").slice(0, 3);
-  }
-
   function renderFrames(liste, mitFilmname) {
     return liste.map(a => {
       const eckeKlasse = a.film_typ === "sw" ? "dashboard-typ-sw" : a.film_typ === "farbe" ? "dashboard-typ-farbe" : "";
       return `
       <div class="frame">
         ${eckeKlasse ? `<div class="dashboard-typ-ecke ${eckeKlasse}"></div>` : ""}
-        <div class="frame-nr">${a.film_kamera ? escapeHtml(kameraKuerzel(a.film_kamera)) : String(a.frame_nr)}</div>
         <div>
   ${a.motiv ? `<div class="frame-motiv">${escapeHtml(a.motiv)}</div>` : ""}
   ${mitFilmname ? `<div class="frame-film">${escapeHtml(a.film_kamera)} · ${escapeHtml(a.film_name)}</div>` : ""}
