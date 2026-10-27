@@ -5,30 +5,30 @@
 
   const VALID_VIEWS = Array.from(views).map(v => v.dataset.view);
 
-  // Ansicht plus optionaler Parameter, z. B. navigate("film-detail", 12) -> #film-detail/12
-  function navigate(name, param) {
-    const ziel = param !== undefined ? `${name}/${param}` : name;
+  // Ansicht plus optionale Parameter, z. B. navigate("film-detail", 12, 5) -> #film-detail/12/5
+  function navigate(name, ...params) {
+    const ziel = [name, ...params.filter(p => p !== undefined)].join("/");
     if (location.hash.slice(1) === ziel) {
-      showView(name, param);
+      showView(name, ...params);
     } else {
       location.hash = ziel;
     }
   }
 
   function parseHash() {
-    const [name, param] = location.hash.slice(1).split("/");
-    return { name: VALID_VIEWS.includes(name) ? name : "start", param };
+    const [name, param, param2] = location.hash.slice(1).split("/");
+    return { name: VALID_VIEWS.includes(name) ? name : "start", param, param2 };
   }
 
   window.addEventListener("hashchange", () => {
-    const { name, param } = parseHash();
-    showView(name, param);
+    const { name, param, param2 } = parseHash();
+    showView(name, param, param2);
   });
 
-  function showView(name, param) {
+  function showView(name, param, param2) {
     views.forEach(v => v.hidden = v.dataset.view !== name);
     if (backBtn) backBtn.hidden = name === "start";
-    if (name === "film-detail") initFilmDetail(param);
+    if (name === "film-detail") initFilmDetail(param, param2);
     if (name === "start") initStart();
     if (name === "neuer-film") initNeuerFilm();
     if (name === "neue-aufnahme") initNeueAufnahme();
@@ -120,22 +120,6 @@
   document.addEventListener("click", (e) => {
     const btn = e.target.closest(".add-btn");
     if (btn) handleAddClick(btn);
-  });
-
-  document.addEventListener("click", async (e) => {
-    const btn = e.target.closest(".frame-delete-btn");
-    if (!btn) return;
-    const filmNummer = btn.dataset.filmNummer;
-    const frameTitle = btn.dataset.frameTitle;
-    const frameNr = btn.dataset.frameNr;
-    if (!confirm(`"${frameTitle}" wirklich löschen?`)) return;
-    try {
-      await api(`/api/films/${filmNummer}/aufnahmen/${frameNr}`, { method: "DELETE" });
-      initZuletzt();
-      initStart();
-    } catch (err) {
-      alert(err.message);
-    }
   });
 
   async function initAuswahllisten() {
@@ -494,49 +478,122 @@
 
   // ---------- Zuletzt ----------
   async function initZuletzt() {
-  const container = document.getElementById("zuletztListe");
-  const filterSelect = document.getElementById("zuletztFilterSelect");
+    const container = document.getElementById("zuletztListe");
+    const filterSelect = document.getElementById("zuletztFilterSelect");
+    const SCHRITT = 25;                                  // so viele Eintraege kommen pro Klick dazu
+    const startLimit = () => (filterSelect.value ? 36 : SCHRITT);   // gefiltert: ein ganzer Film
+    let anzeigeLimit = startLimit();
 
-  if (!filterSelect.dataset.geladen) {
-    filterSelect.innerHTML = `<option value="">Alle</option>`;
-    try {
-      const filme = await api("/api/films?status=offen");
-      filterSelect.innerHTML += filme
-        .map(f => `<option value="${f.nummer}">${escapeHtml(f.kamera)} (${escapeHtml(f.name)} #${f.nummer})</option>`)
-        .join("");
-    } catch (err) {
-      // Filter-Liste ist ein Komfort-Feature, kein Grund die Ansicht zu blockieren.
-    }
-    filterSelect.dataset.geladen = "true";
-    filterSelect.onchange = () => ladeZuletztListe();
-  }
-
-  await ladeZuletztListe();
-
-  async function ladeZuletztListe() {
-    const filmNummer = filterSelect.value;
-    container.innerHTML = `<p class="empty-state">Wird geladen …</p>`;
-    try {
-      const url = filmNummer
-        ? `/api/aufnahmen/recent?limit=36&film_nummer=${filmNummer}`
-        : `/api/aufnahmen/recent?limit=25`;
-      const liste = await api(url);
-      if (!liste.length) {
-        container.innerHTML = `<p class="empty-state">Noch keine Aufnahmen protokolliert.</p>`;
-        return;
+    if (!filterSelect.dataset.geladen) {
+      filterSelect.innerHTML = `<option value="">Alle</option>`;
+      try {
+        const filme = await api("/api/films?status=offen");
+        filterSelect.innerHTML += filme
+          .map(f => `<option value="${f.nummer}">${escapeHtml(f.kamera)} (${escapeHtml(f.name)} #${f.nummer})</option>`)
+          .join("");
+      } catch (err) {
+        // Filter-Liste ist ein Komfort-Feature, kein Grund die Ansicht zu blockieren.
       }
-      const heute = todayStr();
-      const heuteListe = liste.filter(a => a.datum === heute);
-      const aelterListe = liste.filter(a => a.datum !== heute);
-      container.innerHTML = `
-        ${heuteListe.length ? `<p class="dashboard-label">Heute</p>${renderFrames(heuteListe, true, true)}` : ""}
-        ${aelterListe.length ? `<p class="dashboard-label">Älter</p>${renderFrames(aelterListe, true, true)}` : ""}
-      `;
-    } catch (err) {
-      container.innerHTML = `<p class="error-msg">${escapeHtml(err.message)}</p>`;
+      filterSelect.dataset.geladen = "true";
     }
+    // bei jedem Aufruf neu zuweisen, damit der Handler zum aktuellen Zustand (anzeigeLimit) gehoert
+    filterSelect.onchange = () => ladeZuletztListe(true);
+
+    function karteHtml(a, i) {
+      const eckeKlasse = a.film_typ === "sw" ? "dashboard-typ-sw" : a.film_typ === "farbe" ? "dashboard-typ-farbe" : "";
+      return `
+        <div class="eintrag">
+          ${eckeKlasse ? `<div class="dashboard-typ-ecke ${eckeKlasse}"></div>` : ""}
+          <div class="eintrag-nr eintrag-nr-kuerzel">${a.film_kamera ? escapeHtml(kameraKuerzel(a.film_kamera)) : String(a.frame_nr)}</div>
+          <div class="eintrag-info">
+            <div class="eintrag-motiv">${a.motiv ? escapeHtml(a.motiv) : "(kein Motiv)"}</div>
+            <div class="eintrag-film">${escapeHtml(a.film_kamera)} · ${escapeHtml(a.film_name)}</div>
+            <div class="eintrag-meta">${aufnahmeMetaText(a)}</div>
+          </div>
+          <div class="eintrag-aktionen">
+            ${a.film_archiviert ? "" : `<button type="button" class="eintrag-edit-btn" data-i="${i}" title="Bearbeiten">✏️</button>`}
+            <button type="button" class="eintrag-del-btn" data-i="${i}" title="Löschen">🗑️</button>
+          </div>
+        </div>`;
+    }
+
+    // neu = true: von vorn beginnen (Aufruf der Ansicht, Filterwechsel); sonst Limit beibehalten bzw. erhoehen
+    async function ladeZuletztListe(neu) {
+      if (neu) {
+        anzeigeLimit = startLimit();
+        container.innerHTML = `<p class="empty-state">Wird geladen …</p>`;
+      }
+      const filmNummer = filterSelect.value;
+      try {
+        // einen Eintrag mehr anfordern als angezeigt wird: so erkennt man, ob es weitere gibt
+        const url = `/api/aufnahmen/recent?limit=${anzeigeLimit + 1}` + (filmNummer ? `&film_nummer=${filmNummer}` : "");
+        const geladen = await api(url);
+        const gibtMehr = geladen.length > anzeigeLimit;
+        const liste = geladen.slice(0, anzeigeLimit);
+        if (!liste.length) {
+          container.innerHTML = `<p class="empty-state">Noch keine Aufnahmen protokolliert.</p>`;
+          return;
+        }
+
+        const heute = todayStr();
+        const gruppe = (titel, test) => {
+          const karten = liste.map((a, i) => (test(a) ? karteHtml(a, i) : "")).join("");
+          return karten
+            ? `<p class="dashboard-label">${titel}</p><div class="eintraege-liste eintraege-liste-abstand">${karten}</div>`
+            : "";
+        };
+        container.innerHTML = `
+          ${gruppe("Heute", a => a.datum === heute)}
+          ${gruppe("Älter", a => a.datum !== heute)}
+          ${gibtMehr ? `<button type="button" class="mehr-anzeigen-btn">Mehr anzeigen</button>` : ""}
+        `;
+
+        // Bearbeiten: in die Detailansicht des Films springen, die gleich das Formular dieser Aufnahme oeffnet
+        container.querySelectorAll(".eintrag-edit-btn").forEach(btn => {
+          btn.onclick = () => {
+            const a = liste[Number(btn.dataset.i)];
+            navigate("film-detail", a.film_nummer, a.frame_nr);
+          };
+        });
+
+        container.querySelectorAll(".eintrag-del-btn").forEach(btn => {
+          btn.onclick = async () => {
+            const a = liste[Number(btn.dataset.i)];
+            const bezeichnung = a.motiv || `Aufnahme ${a.frame_nr}`;
+            if (!confirm(`„${bezeichnung}" (${a.film_kamera} · ${a.film_name}, Nr. ${a.frame_nr}) wirklich löschen? Die folgenden Aufnahmen dieses Films rücken nach.`)) return;
+            try {
+              await api(`/api/films/${a.film_nummer}/aufnahmen/${a.frame_nr}`, { method: "DELETE" });
+              await ladeZuletztListe(false);   // gleiche Laenge wie vorher, kein Zurueckspringen
+              initStart();
+            } catch (err) {
+              alert(err.message);
+            }
+          };
+        });
+
+        const mehrBtn = container.querySelector(".mehr-anzeigen-btn");
+        if (mehrBtn) {
+          mehrBtn.onclick = async () => {
+            mehrBtn.disabled = true;          // verhindert Doppelklick
+            anzeigeLimit += SCHRITT;
+            await ladeZuletztListe(false);    // Liste bleibt stehen, bis die neue da ist
+          };
+        }
+      } catch (err) {
+        if (neu) {
+          container.innerHTML = `<p class="error-msg">${escapeHtml(err.message)}</p>`;
+        } else {
+          // beim Nachladen die vorhandene Liste nicht wegwerfen
+          alert(err.message);
+          anzeigeLimit = Math.max(startLimit(), anzeigeLimit - SCHRITT);
+          const btn = container.querySelector(".mehr-anzeigen-btn");
+          if (btn) btn.disabled = false;
+        }
+      }
+    }
+
+    await ladeZuletztListe(true);
   }
-}
 
   // ---------- Downloads ----------
   async function initDownloads() {
@@ -658,8 +715,20 @@
     }
   }
 
+  // Meta-Zeile einer Aufnahme (Detailansicht und Zuletzt-Liste): Objektiv · Belichtung · Blende · Blitz · Datum · Ort
+  function aufnahmeMetaText(a) {
+    return [
+      a.objektiv,
+      a.belichtungszeit,
+      a.blende,
+      a.blitz ? "⚡" : "",
+      `${a.datum || ""} ${a.uhrzeit || ""}`.trim(),
+      a.ort_text,
+    ].filter(Boolean).map(escapeHtml).join(" · ");
+  }
+
   // ---------- Film-Detail: Aufnahmen ansehen, bearbeiten, einfuegen, loeschen ----------
-  async function initFilmDetail(nummerParam) {
+  async function initFilmDetail(nummerParam, positionParam) {
     const nummer = parseInt(nummerParam, 10);
     const titel = document.getElementById("filmDetailTitel");
     const info = document.getElementById("filmDetailInfo");
@@ -691,16 +760,17 @@
     const jsonHeader = { "Content-Type": "application/json" };
     // null | { typ: "edit" | "insert", position }  -> welches Formular gerade offen ist
     let modus = null;
+    let beimOeffnenZentrieren = false;
 
-    function metaText(a) {
-      return [
-        a.objektiv,
-        a.belichtungszeit,
-        a.blende,
-        a.blitz ? "⚡" : "",
-        `${a.datum || ""} ${a.uhrzeit || ""}`.trim(),
-        a.ort_text,
-      ].filter(Boolean).map(escapeHtml).join(" · ");
+    // Aus der Zuletzt-Liste: #film-detail/12/5 oeffnet gleich das Bearbeiten-Formular der Aufnahme 5
+    const gewuenschtePosition = parseInt(positionParam, 10);
+    if (gewuenschtePosition >= 1 && gewuenschtePosition <= film.aufnahmen.length) {
+      modus = { typ: "edit", position: gewuenschtePosition };
+      beimOeffnenZentrieren = true;
+    }
+    if (positionParam !== undefined) {
+      // Adresse bereinigen (ohne neuen Verlaufseintrag), damit ein Neuladen nicht erneut das Formular oeffnet
+      history.replaceState(null, "", `#film-detail/${nummer}`);
     }
 
     function zeileHtml(a, pos) {
@@ -709,7 +779,7 @@
           <div class="eintrag-nr">${pos}</div>
           <div class="eintrag-info">
             <div class="eintrag-motiv">${a.motiv ? escapeHtml(a.motiv) : "(kein Motiv)"}</div>
-            <div class="eintrag-meta">${metaText(a)}</div>
+            <div class="eintrag-meta">${aufnahmeMetaText(a)}</div>
           </div>
           <div class="eintrag-aktionen">
             <button type="button" class="eintrag-edit-btn" data-pos="${pos}" title="Bearbeiten">✏️</button>
@@ -875,7 +945,10 @@
           speichernBtn.disabled = false;
         }
       };
-      if (form.scrollIntoView) form.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      if (form.scrollIntoView) {
+        form.scrollIntoView({ behavior: "smooth", block: beimOeffnenZentrieren ? "center" : "nearest" });
+      }
+      beimOeffnenZentrieren = false;
     }
 
     function render() {
@@ -908,7 +981,7 @@
     return (woerter[0] || "").slice(0, 3);
   }
 
-  function renderFrames(liste, mitFilmname, mitAktionen = false) {
+  function renderFrames(liste, mitFilmname) {
     return liste.map(a => {
       const eckeKlasse = a.film_typ === "sw" ? "dashboard-typ-sw" : a.film_typ === "farbe" ? "dashboard-typ-farbe" : "";
       return `
@@ -928,7 +1001,6 @@
   ${a.belichtungszeit ? escapeHtml(a.belichtungszeit) + " " : ""}
   ${a.blende ? escapeHtml(a.blende) : ""}
           </div>
-  ${mitAktionen ? `<button type="button" class="frame-delete-btn" data-film-nummer="${a.film_nummer}" data-frame-nr="${a.frame_nr}" data-frame-title="${escapeHtml(a.motiv || `Aufnahme ${a.frame_nr}`)}">Löschen</button>` : ""}
         </div>
       </div>
     `;
@@ -945,5 +1017,5 @@
   }
 
   const initial = parseHash();
-  showView(initial.name, initial.param);
+  showView(initial.name, initial.param, initial.param2);
 })();

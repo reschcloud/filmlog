@@ -434,6 +434,7 @@ def recent_aufnahmen():
             row["film_name"] = film["name"]
             row["film_kamera"] = film["kamera"]
             row["film_typ"] = film.get("filmtyp")
+            row["film_archiviert"] = bool(film.get("archiviert"))
             row["film_name"] = film["name"]
             row["frame_nr"] = idx
             alle.append(row)
