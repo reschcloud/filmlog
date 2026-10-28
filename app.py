@@ -1,3 +1,4 @@
+import csv
 import os
 import re
 import threading
@@ -617,8 +618,48 @@ def download_client():
         headers={"Content-Disposition": 'attachment; filename="filmlog-exif-writer.zip"'},
     )
 
+# CSV-Export: Excel (deutsche Einstellung) erwartet Semikolon als Trenner und UTF-8 mit BOM fuer Umlaute.
+CSV_TRENNER = ";"
+# Dezimalkomma bei den Koordinaten: zum Semikolon passend wird "16,37" von deutschem Excel als Zahl gelesen,
+# "16.37" dagegen als Datum bzw. Text. Auf False setzen, wenn die Datei mit Dezimalpunkt gebraucht wird.
+CSV_DEZIMALKOMMA = True
+CSV_SPALTEN = (
+    "Film-Nr", "Film", "Kamera",
+    "Nr", "Datum", "Uhrzeit", "Ort", "Breitengrad", "Längengrad", "Objektiv", "Belichtungszeit", "Blende", "Blitz", "Motiv",
+    "Filmtyp", "Ablaufjahr", "Angelegt", "Abgeschlossen",
+)
+
+
+def _csv_text(wert):
+    """Text fuer eine CSV-Zelle: None -> leer. Beginnt der Text mit = + - oder @, bekommt er ein ' davor,
+    damit Excel/LibreOffice ihn nicht als Formel auswerten (z. B. ein Motiv wie "-5 Grad")."""
+    text = "" if wert is None else str(wert)
+    if text[:1] in ("=", "+", "-", "@", "\t", "\r"):
+        text = "'" + text
+    return text
+
+
+def _csv_zahl(wert):
+    """Koordinate fuer eine CSV-Zelle: None/leer -> leer, sonst die Zahl unveraendert (0 bleibt 0), ohne
+    wissenschaftliche Schreibweise, je nach CSV_DEZIMALKOMMA mit Komma oder Punkt. Negative Werte beginnen
+    absichtlich mit '-' und bekommen kein ' (sie sind Zahlen, keine Formeln)."""
+    if wert is None or wert == "":
+        return ""
+    try:
+        zahl = float(wert)
+    except (TypeError, ValueError):
+        return _csv_text(wert)                    # ungewoehnlicher Wert: als Text ausgeben
+    text = repr(zahl)
+    if "e" in text.lower():                       # z. B. 1e-05 -> 0.00001
+        text = f"{zahl:.12f}".rstrip("0").rstrip(".")
+    if text.endswith(".0"):
+        text = text[:-2]
+    return text.replace(".", ",") if CSV_DEZIMALKOMMA else text
+
+
 @app.route("/api/films/<int:nummer>/export", methods=["GET"])
 def export_film(nummer):
+    """Liste aller Aufnahmen eines Films als CSV: eine Zeile pro Aufnahme, die Filmangaben stehen in eigenen Spalten."""
     with _lock:
         db = load_db()
     film = db["films"].get(str(nummer))
@@ -626,40 +667,27 @@ def export_film(nummer):
         return jsonify({"error": "Film nicht gefunden."}), 404
 
     nr_str = str(nummer).zfill(3)
-    lines = [
-        f"FILM NR. {nr_str}",
-        f"{film['name']} — {film['kamera']}",
-        f"Ablaufjahr: {film.get('ablaufdatum') or '–'}",
-        f"Angelegt: {film.get('angelegt_am') or '–'}",
-        f"Status: {film['status']}"
-        + (f" ({film['abgeschlossen_am']})" if film.get("abgeschlossen_am") else ""),
-        "-" * 60,
-        "",
-    ]
+    filmtyp = FILMTYP_LABELS.get(film.get("filmtyp"), "")
+    angelegt = (film.get("angelegt_am") or "")[:10]
+    abgeschlossen = (film.get("abgeschlossen_am") or "")[:10]
 
-    aufnahmen = film.get("aufnahmen", [])
-    if not aufnahmen:
-        lines.append("(keine Aufnahmen)")
-    for idx, a in enumerate(aufnahmen, start=1):
-        lines.append(f"Bild {idx:02d}  |  {a.get('datum') or ''} {a.get('uhrzeit') or ''}  |  {a.get('ort_text') or '–'}")
-        details = []
-        if a.get("objektiv"):
-            details.append(f"Objektiv: {a['objektiv']}")
-        if a.get("belichtungszeit"):
-            details.append(f"Belichtungszeit: {a['belichtungszeit']}")
-        if a.get("blende"):
-            details.append(f"Blende: {a['blende']}")
-        if details:
-            lines.append("  " + "  ·  ".join(details))
-        if a.get("motiv"):
-            lines.append(f"  Motiv: {a['motiv']}")
-        lines.append("")
+    puffer = io.StringIO()
+    schreiber = csv.writer(puffer, delimiter=CSV_TRENNER, lineterminator="\r\n")
+    schreiber.writerow(CSV_SPALTEN)
+    for idx, a in enumerate(film.get("aufnahmen", []), start=1):
+        schreiber.writerow([
+            nummer, _csv_text(film["name"]), _csv_text(film["kamera"]),
+            idx, a.get("datum") or "", a.get("uhrzeit") or "", _csv_text(a.get("ort_text")),
+            _csv_zahl(a.get("ort_lat")), _csv_zahl(a.get("ort_lon")),
+            _csv_text(a.get("objektiv")), _csv_text(a.get("belichtungszeit")), _csv_text(a.get("blende")),
+            "ja" if a.get("blitz") else "", _csv_text(a.get("motiv")),
+            filmtyp, film.get("ablaufdatum") or "", angelegt, abgeschlossen,
+        ])
 
-    content = "\n".join(lines)
-    filename = f"film_{nr_str}_{_slugify(film['name'])}.txt"
+    filename = f"film_{nr_str}_{_slugify(film['name'])}.csv"
     return Response(
-        content,
-        mimetype="text/plain",
+        puffer.getvalue().encode("utf-8-sig"),     # mit BOM, damit Excel UTF-8 erkennt
+        content_type="text/csv; charset=utf-8",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
 

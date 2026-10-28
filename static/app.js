@@ -691,7 +691,7 @@
             </div>
             <div class="download-row-actions">
               ${bearbeitbar ? `<button type="button" class="edit-icon-btn" data-nummer="${f.nummer}" title="Aufnahmen ansehen und bearbeiten">✏️</button>` : ""}
-              <a class="download-btn" href="/api/films/${f.nummer}/export" download title="Protokoll herunterladen">📥</a>
+              <a class="download-btn" href="/api/films/${f.nummer}/export" download title="Als CSV-Liste herunterladen">📥</a>
               ${!f.entwickelt ? `<button type="button" class="entwickeln-btn" data-nummer="${f.nummer}">Entwickelt</button>` : ""}
               ${f.entwickelt ? `<button type="button" class="archivieren-btn" data-nummer="${f.nummer}" data-archiviert="${f.archiviert ? "1" : "0"}">${f.archiviert ? "Dearchivieren" : "Archivieren"}</button>` : ""}
             </div>
