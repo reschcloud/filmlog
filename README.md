@@ -1,5 +1,10 @@
 # Filmlog
 
+> **Dieser Stand ist v1 und wird nicht mehr weiterentwickelt.** Der Neubau läuft als
+> Docker-Container mit Login und SQLite: **[filmlog-v2](https://github.com/reschcloud/filmlog-v2)**.
+> Die Daten aus `data/db.yaml` lassen sich dorthin importieren; die Anleitung steht im v2-Repo.
+> Der Code hier bleibt zum Nachschlagen und für bestehende Installationen erhalten (Tag `v1.0`).
+
 Kleine Webapp im lokalen Netz zur Dokumentation analoger Filme und ihrer Aufnahmen.
 Kein Login, keine Datenbank — die Daten liegen als YAML in `data/db.yaml` auf dem Server.
 
